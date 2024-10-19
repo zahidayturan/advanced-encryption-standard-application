@@ -40,7 +40,7 @@ class _CustomDropdownMenuState extends State<CustomDropdownMenu> {
       padding: EdgeInsets.symmetric(horizontal: widget.padding),
       decoration: BoxDecoration(
           color: widget.dropdownColor,
-          borderRadius: BorderRadius.all(Radius.circular(6))),
+          borderRadius: BorderRadius.all(Radius.circular(50))),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: widget.controller.text,

@@ -1,4 +1,5 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/routes/home/components/home_key_and_encryption.dart';
 import 'package:aes/routes/home/components/home_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 18,),
                   HomeTopBar(),
                   SizedBox(height: 18,),
+                  HomeKeyAndEncryption()
                 ],
               ),
             ),

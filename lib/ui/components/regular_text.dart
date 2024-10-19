@@ -8,6 +8,7 @@ class RegularText extends StatelessWidget {
   final int? maxLines;
   final FontStyle? style;
   final FontWeight? weight;
+  final TextAlign? align;
 
   const RegularText({
     required this.texts,
@@ -17,6 +18,7 @@ class RegularText extends StatelessWidget {
     this.maxLines,
     this.style,
     this.weight,
+    this.align,
     Key? key,
   }) : super(key: key);
 
@@ -31,6 +33,7 @@ class RegularText extends StatelessWidget {
         fontSize: size,
         fontWeight: weight
       ),
+      textAlign: align,
       overflow: TextOverflow.ellipsis,
       maxLines: maxLines,
     );

@@ -50,7 +50,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           children: [
             const RegularText(texts: "Güvenlik Seviyesi",size: 13,),
             CustomDropdownMenu(
-              list: ["128 bit","192 bit","256 bit"],
+              list: const ["128 bit","192 bit","256 bit"],
               textColor: colors.white,
               dropdownColor: colors.greenDark,
               fontSize: 13,
@@ -64,24 +64,31 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
   }
 
   Widget allKeys(){
-    return BaseContainer(height: 144,child: Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 48,top: 64),
-          child: Image.asset("assets/icons/allKeys.png",color: Theme.of(context).scaffoldBackgroundColor),
+    return BaseContainer(
+        height: 132,
+        padding: 0,
+        child: Stack(
+          children: [
+        Positioned(
+          left: -6,
+          bottom: -6,
+          child: Image.asset("assets/icons/allKeys.png",height: 56,color: Theme.of(context).scaffoldBackgroundColor),
         ),
         Padding(
-          padding: const EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               RichTextWidget(
-                  fontSize: 13,
-                  texts: ["Üretilen\n","Anahtarlar"],
+                  fontSize: 14,
+                  texts: const ["Üretilen\n","Anahtarlar"],
                   colors: [colors.greenDark],
-                  fontFamilies: ["FontMedium","FontBold"]
+                  fontFamilies: const ["FontMedium","FontBold"]
               ),
+              const Align(
+                  alignment: Alignment.bottomRight,
+                  child: RegularText(texts: "Üretilmiş\nanahtar\nyok",size: 11,align: TextAlign.end,))
             ],
           ),
         ),
@@ -90,7 +97,42 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
   }
 
   Widget generateKey(){
-    return const BaseContainer(height: 144,child: SizedBox());
+    return BaseContainer(
+        height: 132,
+        padding: 0,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 14,
+              bottom: -14,
+              child: Image.asset("assets/icons/generateKey.png",height: 102,color: Theme.of(context).scaffoldBackgroundColor),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    BaseContainer(
+                        color: colors.greenDark,
+                        radius: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: RichTextWidget(
+                              texts: const ["Anahtar ","Üret"],
+                              fontSize: 14,
+                              colors: [colors.white],
+                              fontFamilies: const ["FontMedium","FontBold"]),
+                        )),
+                    const RegularText(texts: "Aktif anahtar\nyok",size: 11,align: TextAlign.end,)
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   Widget encryptFile(){
@@ -103,13 +145,11 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               radius: 50,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Center(
-                  child: RichTextWidget(
-                  texts: ["Dosya ","Şifrele"],
-                  fontSize: 14,
-                  colors: [colors.white],
-                  fontFamilies: ["FontMedium","FontBold"]),
-                ),
+                child: RichTextWidget(
+                texts: const ["Dosya ","Şifrele"],
+                fontSize: 14,
+                colors: [colors.white],
+                fontFamilies: const ["FontMedium","FontBold"]),
               )),
             const Expanded(child: Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)))
 

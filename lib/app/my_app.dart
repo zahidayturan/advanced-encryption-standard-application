@@ -1,4 +1,5 @@
-import 'package:aes/core/theme/theme_colors.dart';
+import 'package:aes/core/theme/theme.dart';
+import 'package:aes/routes/home/home.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: SizedBox(),
+      home: const HomePage(),
     );
   }
 }

@@ -26,7 +26,7 @@ class BaseContainer extends StatelessWidget {
       height: height,
       padding: EdgeInsets.all(padding ?? 6),
       decoration: BoxDecoration(
-        color: color ?? colors.white,
+        color: color ?? Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.all(Radius.circular(radius ?? 8)),
       ),
       child: child,

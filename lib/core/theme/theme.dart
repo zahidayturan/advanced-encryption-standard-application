@@ -9,6 +9,10 @@ class AppTheme {
       primaryColor: colors.grey,
       useMaterial3: false,
       fontFamily: "FontMedium",
+      colorScheme: const ColorScheme.light().copyWith(
+        secondary: colors.black,
+          primaryContainer: colors.white,
+      ),
       scaffoldBackgroundColor: colors.grey,
   );
 
@@ -16,6 +20,10 @@ class AppTheme {
       primaryColor: colors.black, //
       useMaterial3: false,
       fontFamily: "FontMedium",
+      colorScheme: const ColorScheme.light().copyWith(
+        secondary: colors.grey,
+        primaryContainer: colors.blackLight,
+      ),
       scaffoldBackgroundColor: colors.black,
   );
 }

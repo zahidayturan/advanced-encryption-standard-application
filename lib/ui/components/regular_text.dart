@@ -27,7 +27,7 @@ class RegularText extends StatelessWidget {
     return Text(
       texts,
       style: TextStyle(
-        color: color,
+        color: color ?? Theme.of(context).colorScheme.secondary,
         fontFamily: family,
         fontStyle: style,
         fontSize: size,

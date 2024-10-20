@@ -18,25 +18,48 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return  Stack(
       children: [
-        RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: colors.greenDark,style: FontStyle.italic,weight: FontWeight.w600,),
-        const SizedBox(height: 12,),
-        bitSize(),
-        const SizedBox(height: 12,),
-        Row(children: [
-          Expanded(
-              flex: 2,
-              child: allKeys()),
-          const SizedBox(width: 12,),
-          Expanded(
-              flex: 3,
-              child: generateKey())
-        ],),
-        const SizedBox(height: 12,),
-        encryptFile()
+        Positioned(
+          right: -54,
+          top: 44,
 
+          child: RotationTransition(
+            turns: new AlwaysStoppedAnimation(30 / 360),
+            child: Container(
+              height: 200,
+              width: 110,
+              decoration: BoxDecoration(
+                color: colors.greenDark,
+                borderRadius: BorderRadius.all(Radius.circular(8))
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: colors.greenDark,style: FontStyle.italic,weight: FontWeight.w600,),
+              const SizedBox(height: 12,),
+              bitSize(),
+              const SizedBox(height: 12,),
+              Row(children: [
+                Expanded(
+                    flex: 2,
+                    child: allKeys()),
+                const SizedBox(width: 12,),
+                Expanded(
+                    flex: 3,
+                    child: generateKey())
+              ],),
+              const SizedBox(height: 12,),
+              encryptFile()
+
+            ],
+          ),
+        )
       ],
     );
   }
@@ -137,22 +160,29 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
 
   Widget encryptFile(){
     return BaseContainer(
-        height: 44,
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          BaseContainer(
-              color: colors.greenDark,
-              radius: 50,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: RichTextWidget(
-                texts: const ["Dosya ","Şifrele"],
-                fontSize: 14,
-                colors: [colors.white],
-                fontFamilies: const ["FontMedium","FontBold"]),
-              )),
-            const Expanded(child: Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)))
-
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BaseContainer(
+                  color: colors.greenDark,
+                  radius: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: RichTextWidget(
+                        texts: const ["Dosya ","Şifrele"],
+                        fontSize: 14,
+                        colors: [colors.white],
+                        fontFamilies: const ["FontMedium","FontBold"]),
+                  )),
+              Icon(Icons.add_circle_outline_rounded,size: 24,color: colors.greenDark,)
+            ],
+          ),
+            SizedBox(height: 12,),
+            Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)),
+            SizedBox(height: 12,),
         ],));
   }
 

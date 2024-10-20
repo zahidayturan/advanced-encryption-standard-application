@@ -22,21 +22,21 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: null,
-        body: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Center(
-              child: Column(
-                children: [
-                  SizedBox(height: 18,),
-                  HomeTopBar(),
-                  SizedBox(height: 24,),
-                  HomeKeyAndEncryption(),
-                  SizedBox(height: 24,),
-                  HomeFiles()
-                ],
-              ),
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 18,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: HomeTopBar(),
+                ),
+                SizedBox(height: 28,),
+                HomeKeyAndEncryption(),
+                SizedBox(height: 28,),
+                HomeFiles()
+              ],
             ),
           ),
         ),

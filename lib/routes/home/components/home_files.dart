@@ -18,20 +18,43 @@ class _HomeFilesState extends State<HomeFiles> {
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return  Stack(
       children: [
-        RegularText(texts: "Dosya İşlemleri",size: 15,color: colors.blue,style: FontStyle.italic,weight: FontWeight.w600,),
-        const SizedBox(height: 12,),
-        fileToggle(),
-        const SizedBox(height: 12,),
-        Row(children: [
-          swapButton(),
-          const SizedBox(width: 12,),
-          Expanded(child: searchBar())
-        ],),
-        const SizedBox(height: 12,),
-        files()
+        Positioned(
+          left: -54,
+          top: 42,
+
+          child: RotationTransition(
+            turns: new AlwaysStoppedAnimation(30 / 360),
+            child: Container(
+              height: 200,
+              width: 90,
+              decoration: BoxDecoration(
+                  color: colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(8))
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RegularText(texts: "Dosya İşlemleri",size: 15,color: colors.blue,style: FontStyle.italic,weight: FontWeight.w600,),
+              const SizedBox(height: 12,),
+              fileToggle(),
+              const SizedBox(height: 12,),
+              Row(children: [
+                swapButton(),
+                const SizedBox(width: 12,),
+                Expanded(child: searchBar())
+              ],),
+              const SizedBox(height: 12,),
+              files()
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -77,7 +100,7 @@ class _HomeFilesState extends State<HomeFiles> {
                     padding: 2,
                     color: Theme.of(context).scaffoldBackgroundColor,
                     radius: 50,
-                    child: Icon(Icons.more_horiz_rounded,size: 15,color: colors.blue))
+                    child: Icon(Icons.more_horiz_rounded,size: 20,color: colors.blue))
               ],
             )
           ],

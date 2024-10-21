@@ -104,7 +104,7 @@ class _HomeFilesState extends State<HomeFiles> {
               children: [
                 RichTextWidget(
                     texts: const ["bit_sayisi ","bit anahtar ile şifrelendi"],
-                    colors: [colors.black],
+                    colors: [Theme.of(context).colorScheme.secondary],
                     fontSize: 12,
                     fontFamilies: const ["FontBold","FontMedium"]),
                 BaseContainer(
@@ -139,7 +139,7 @@ class _HomeFilesState extends State<HomeFiles> {
           onTap: () {},
           style: TextStyle(
               fontSize: 12,
-              color: colors.black
+              color: Theme.of(context).colorScheme.secondary
           ),
           readOnly: false,
           decoration: InputDecoration(
@@ -148,7 +148,7 @@ class _HomeFilesState extends State<HomeFiles> {
               isDense: true,
               hintStyle: TextStyle(
                   fontSize: 12,
-                  color: colors.black
+                  color: Theme.of(context).colorScheme.secondary
               ),
               border: InputBorder.none,
               suffixIcon: IconButton(

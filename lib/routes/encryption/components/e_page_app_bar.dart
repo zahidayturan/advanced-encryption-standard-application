@@ -17,7 +17,7 @@ class EPageAppBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             onPressed: () {
           Navigator.pop(context);
-        }, icon: const Icon(Icons.arrow_back_rounded)),
+        }, icon: Icon(Icons.arrow_back_rounded,color: Theme.of(context).colorScheme.secondary,)),
         RegularText(texts: texts,size: 17,align: TextAlign.end,)
       ],
     );

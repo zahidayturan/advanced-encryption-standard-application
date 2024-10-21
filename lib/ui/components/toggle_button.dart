@@ -45,7 +45,7 @@ class _ToggleButtonState extends State<ToggleButton> {
           padding: EdgeInsets.symmetric(horizontal: 12),
           margin: currentButton == index ? EdgeInsets.all(4) : EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: currentButton == index ? colors.blue : colors.white,
+            color: currentButton == index ? colors.blue : Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.all(Radius.circular(6)),
           ),
           child: Center(
@@ -69,7 +69,7 @@ class _ToggleButtonState extends State<ToggleButton> {
         Container(
           height: 34,
           decoration: BoxDecoration(
-            color: colors.white,
+            color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
         ),

@@ -40,7 +40,19 @@ class _HomeFilesState extends State<HomeFiles> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RegularText(texts: "Dosya İşlemleri",size: 15,color: colors.blue,style: FontStyle.italic,weight: FontWeight.w600,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  RegularText(texts: "Dosya İşlemleri",size: 15,color: colors.blue,style: FontStyle.italic,weight: FontWeight.w600,),
+                  InkWell(
+                      onTap: (){
+
+                      },
+                      child: BaseContainer(
+                          padding: 2, color: colors.blue, radius: 50,
+                          child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
+                ],
+              ),
               const SizedBox(height: 12,),
               fileToggle(),
               const SizedBox(height: 12,),

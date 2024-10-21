@@ -1,4 +1,5 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/routes/encryption/all_keys_page.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
@@ -40,7 +41,19 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: colors.greenDark,style: FontStyle.italic,weight: FontWeight.w600,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: colors.greenDark,style: FontStyle.italic,weight: FontWeight.w600,),
+                  onTapWidget(
+                      onTap: (){
+
+                      },
+                      child: BaseContainer(
+                          padding: 2, color: colors.greenDark, radius: 50,
+                          child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
+                ],
+              ),
               const SizedBox(height: 12,),
               bitSize(),
               const SizedBox(height: 12,),
@@ -98,7 +111,10 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         ),
         onTapWidget(
             onTap: (){
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AllKeysPage()),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -135,7 +151,9 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               child: Image.asset("assets/icons/generateKey.png",height: 102,color: Theme.of(context).scaffoldBackgroundColor),
             ),
             onTapWidget(
-                onTap: (){},
+                onTap: (){
+                  showProductionOptions(context);
+                },
                 child:  Padding(
                 padding: const EdgeInsets.all(10),
                 child: Align(
@@ -221,4 +239,55 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
       ),
     );
   }
+
+  void showProductionOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RichTextWidget(
+                  texts: const ["Anahtar ","Üretim Yöntemleri"],
+                  colors: [Theme.of(context).colorScheme.secondary],
+                  fontFamilies: const ["FontMedium","FontBold"],
+                  fontSize: 16,
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: Icon(Icons.qr_code_2_rounded,color: Theme.of(context).colorScheme.secondary,),
+                title: const RegularText(texts: "QR Kod İle Üret", size: 15,),
+                onTap: () {
+                  Navigator.pop(context); // BottomSheet'i kapat
+                  /*Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => QRProductionPage()),
+                  );*/
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.mic_rounded,color: Theme.of(context).colorScheme.secondary,),
+                title: const RegularText(texts: "Ses İle Üret", size: 15,),
+                onTap: () {
+                  Navigator.pop(context); // BottomSheet'i kapat
+                  /*Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VoiceProductionPage()),
+                  );*/
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 }

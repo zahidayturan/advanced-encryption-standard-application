@@ -22,14 +22,14 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         resizeToAvoidBottomInset: false,
         bottomNavigationBar: null,
-        body: SingleChildScrollView(
+        body: const SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Center(
             child: Column(
               children: [
                 SizedBox(height: 18,),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
                   child: HomeTopBar(),
                 ),
                 SizedBox(height: 28,),

@@ -23,15 +23,14 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         Positioned(
           right: -54,
           top: 44,
-
           child: RotationTransition(
-            turns: new AlwaysStoppedAnimation(30 / 360),
+            turns: const AlwaysStoppedAnimation(30 / 360),
             child: Container(
               height: 200,
               width: 110,
               decoration: BoxDecoration(
                 color: colors.greenDark,
-                borderRadius: BorderRadius.all(Radius.circular(8))
+                borderRadius: const BorderRadius.all(Radius.circular(8))
               ),
             ),
           ),
@@ -98,7 +97,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           child: Image.asset("assets/icons/allKeys.png",height: 56,color: Theme.of(context).scaffoldBackgroundColor),
         ),
         Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,7 +130,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               child: Image.asset("assets/icons/generateKey.png",height: 102,color: Theme.of(context).scaffoldBackgroundColor),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Column(
@@ -160,30 +159,54 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
 
   Widget encryptFile(){
     return BaseContainer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: 0,
+        child: Stack(
           children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              BaseContainer(
-                  color: colors.greenDark,
-                  radius: 50,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: RichTextWidget(
-                        texts: const ["Dosya ","Şifrele"],
-                        fontSize: 14,
-                        colors: [colors.white],
-                        fontFamilies: const ["FontMedium","FontBold"]),
-                  )),
-              Icon(Icons.add_circle_outline_rounded,size: 24,color: colors.greenDark,)
-            ],
-          ),
-            SizedBox(height: 12,),
-            Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)),
-            SizedBox(height: 12,),
-        ],));
+            Positioned(
+              right: 54,
+              bottom: 4,
+              child: RotationTransition(
+                  turns: const AlwaysStoppedAnimation(30 / 360),
+                  child: Image.asset("assets/icons/addFile.png",height: 90,color: Theme.of(context).scaffoldBackgroundColor)),
+            ),
+            Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                onTap: () {
+
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BaseContainer(
+                              color: colors.greenDark,
+                              radius: 50,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: RichTextWidget(
+                                    texts: const ["Dosya ","Şifrele"],
+                                    fontSize: 14,
+                                    colors: [colors.white],
+                                    fontFamilies: const ["FontMedium","FontBold"]),
+                              )),
+                          Icon(Icons.add_circle_outline_rounded,size: 24,color: colors.greenDark,)
+                        ],
+                      ),
+                      const SizedBox(height: 12,),
+                      const Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)),
+                      const SizedBox(height: 12,),
+                    ],),
+                ),
+              ),
+            )
+          ],
+        ));
   }
 
 }

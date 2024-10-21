@@ -11,9 +11,9 @@ class HomeTopBar extends StatelessWidget {
   Widget build(BuildContext context){
     return Row(
       children: [
-        RegularText(texts: "AES",size: 17,color: colors.orange,family: "FontBold"),
+        RegularText(texts: "AES",size: 22,color: colors.orange,family: "FontBold"),
         const SizedBox(width: 4,),
-        RegularText(texts: "Gelişmiş Şifreleme Standardı",size: 12,color: colors.orange,style: FontStyle.italic),
+        RegularText(texts: "Gelişmiş Şifreleme Standardı",size: 11,color: colors.orange,style: FontStyle.italic),
         const Spacer(),
         SizedBox(
             height: 26,

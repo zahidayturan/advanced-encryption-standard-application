@@ -23,15 +23,14 @@ class _HomeFilesState extends State<HomeFiles> {
         Positioned(
           left: -54,
           top: 42,
-
           child: RotationTransition(
-            turns: new AlwaysStoppedAnimation(30 / 360),
+            turns: const AlwaysStoppedAnimation(30 / 360),
             child: Container(
               height: 200,
               width: 90,
               decoration: BoxDecoration(
                   color: colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(8))
+                  borderRadius: const BorderRadius.all(Radius.circular(8))
               ),
             ),
           ),

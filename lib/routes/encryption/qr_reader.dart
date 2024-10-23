@@ -5,14 +5,14 @@ import 'package:aes/ui/components/regular_text.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class QRViewExample extends StatefulWidget {
-  const QRViewExample({super.key});
+class QRCodeReadPage extends StatefulWidget {
+  const QRCodeReadPage({super.key});
 
   @override
-  State<QRViewExample> createState() => _QRViewExampleState();
+  State<QRCodeReadPage> createState() => _QRCodeReadPageState();
 }
 
-class _QRViewExampleState extends State<QRViewExample> {
+class _QRCodeReadPageState extends State<QRCodeReadPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
@@ -23,8 +23,6 @@ class _QRViewExampleState extends State<QRViewExample> {
     super.reassemble();
     if (Platform.isAndroid) {
       controller?.pauseCamera();
-    } else if (Platform.isIOS) {
-      controller?.resumeCamera();
     }
   }
 
@@ -80,7 +78,7 @@ class _QRViewExampleState extends State<QRViewExample> {
         Navigator.pop(context);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => GenerateKey(code: scanData.code!,type: "qr",)),
+          MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: scanData.code!,type: "qr",)),
         );
       }
     });

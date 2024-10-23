@@ -2,6 +2,7 @@ import 'package:aes/core/constants/colors.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
 import 'package:aes/routes/encryption/qr_reader.dart';
+import 'package:aes/routes/encryption/voice_recorder.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
@@ -270,8 +271,8 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GenerateKey(code: "helloworld",type: "qr",)),
-                    //MaterialPageRoute(builder: (context) => QRViewExample()),
+                    //MaterialPageRoute(builder: (context) => GenerateKey(code: "helloworld",type: "qr",)),
+                    MaterialPageRoute(builder: (context) => QRCodeReadPage()),
                   );
                 },
               ),
@@ -280,10 +281,10 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                 title: const RegularText(texts: "Ses İle Üret", size: 15,),
                 onTap: () {
                   Navigator.pop(context);
-                  /*Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => VoiceProductionPage()),
-                  );*/
+                  );
                 },
               ),
             ],

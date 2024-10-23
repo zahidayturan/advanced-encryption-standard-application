@@ -17,6 +17,8 @@ dependencies:
   cloud_firestore: ^4.14.0
   qr_code_scanner: ^1.0.0
   encrypt: ^5.0.3
+  flutter_sound: ^9.2.13
+  permission_handler: ^10.2.0
 
 
 dev_dependencies:

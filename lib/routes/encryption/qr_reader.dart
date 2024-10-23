@@ -46,10 +46,13 @@ class _QRViewExampleState extends State<QRViewExample> {
           ),
           Expanded(
             flex: 1,
-            child: Center(
-              child: (result != null)
-                  ? const RegularText(texts:'Kod Okundu, Bekleyiniz')
-                  : const RegularText(texts: 'QR Kodu Okutunuz'),
+            child: Container(
+              color: result != null ? colors.green : Theme.of(context).scaffoldBackgroundColor ,
+              child: Center(
+                child: (result != null)
+                    ? RegularText(texts:'Kod Okundu, Bekleyiniz',color: colors.grey,)
+                    : const RegularText(texts: 'QR Kodu Okutunuz'),
+              ),
             ),
           )
         ],
@@ -77,7 +80,7 @@ class _QRViewExampleState extends State<QRViewExample> {
         Navigator.pop(context);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => GenerateKey(code: scanData.code!)),
+          MaterialPageRoute(builder: (context) => GenerateKey(code: scanData.code!,type: "qr",)),
         );
       }
     });

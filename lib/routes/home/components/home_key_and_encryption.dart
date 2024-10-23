@@ -270,7 +270,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GenerateKey(code: "code",)),
+                    MaterialPageRoute(builder: (context) => GenerateKey(code: "helloworld",type: "qr",)),
                     //MaterialPageRoute(builder: (context) => QRViewExample()),
                   );
                 },

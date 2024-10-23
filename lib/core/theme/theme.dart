@@ -12,9 +12,15 @@ class AppTheme {
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.black,
         primaryContainer: colors.white,
-        onBackground: colors.black
       ),
       scaffoldBackgroundColor: colors.grey,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colors.greenDark,
+          foregroundColor: colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -24,8 +30,14 @@ class AppTheme {
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.grey,
         primaryContainer: colors.blackLight,
-        onBackground: colors.blackLight
       ),
       scaffoldBackgroundColor: colors.black,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colors.blueMid,
+          foregroundColor: colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
   );
 }

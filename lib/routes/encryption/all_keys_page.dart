@@ -3,7 +3,6 @@ import 'package:aes/data/models/key_info.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/regular_text.dart';
-import 'package:aes/ui/components/rich_text.dart';
 import 'package:aes/ui/components/shimmer_box.dart';
 import 'package:flutter/material.dart';
 

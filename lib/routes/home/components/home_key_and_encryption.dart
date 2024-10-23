@@ -1,5 +1,7 @@
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
+import 'package:aes/routes/encryption/generate_key.dart';
+import 'package:aes/routes/encryption/qr_reader.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
@@ -265,18 +267,19 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                 leading: Icon(Icons.qr_code_2_rounded,color: Theme.of(context).colorScheme.secondary,),
                 title: const RegularText(texts: "QR Kod İle Üret", size: 15,),
                 onTap: () {
-                  Navigator.pop(context); // BottomSheet'i kapat
-                  /*Navigator.push(
+                  Navigator.pop(context);
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => QRProductionPage()),
-                  );*/
+                    MaterialPageRoute(builder: (context) => GenerateKey(code: "code",)),
+                    //MaterialPageRoute(builder: (context) => QRViewExample()),
+                  );
                 },
               ),
               ListTile(
                 leading: Icon(Icons.mic_rounded,color: Theme.of(context).colorScheme.secondary,),
                 title: const RegularText(texts: "Ses İle Üret", size: 15,),
                 onTap: () {
-                  Navigator.pop(context); // BottomSheet'i kapat
+                  Navigator.pop(context);
                   /*Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => VoiceProductionPage()),

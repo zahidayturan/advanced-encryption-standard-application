@@ -11,7 +11,8 @@ class AppTheme {
       fontFamily: "FontMedium",
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.black,
-          primaryContainer: colors.white,
+        primaryContainer: colors.white,
+        onBackground: colors.black
       ),
       scaffoldBackgroundColor: colors.grey,
   );
@@ -23,6 +24,7 @@ class AppTheme {
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.grey,
         primaryContainer: colors.blackLight,
+        onBackground: colors.blackLight
       ),
       scaffoldBackgroundColor: colors.black,
   );

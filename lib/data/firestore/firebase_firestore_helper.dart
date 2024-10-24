@@ -1,3 +1,4 @@
+import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -64,6 +65,31 @@ class FirebaseFirestoreOperation{
       await _firestore.collection('keys').doc(keyId).delete();
     } catch (e) {
       print('Error deleting key: $e');
+    }
+  }
+
+  Future<List<FileInfo>?> getAllFileInfo() async {
+    try {
+      QuerySnapshot fileSnapshot = await _firestore.collection('files').get();
+
+      if (fileSnapshot.docs.isNotEmpty) {
+        List<FileInfo> fileList = fileSnapshot.docs
+            .map((doc) => FileInfo.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+
+        fileList.sort((a, b) {
+          DateTime dateA = DateTime.parse(a.creationTime);
+          DateTime dateB = DateTime.parse(b.creationTime);
+          return dateB.compareTo(dateA);
+        });
+
+        return fileList;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching all file info: $e');
+      return [];
     }
   }
 

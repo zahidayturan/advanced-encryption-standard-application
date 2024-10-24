@@ -40,13 +40,13 @@ class _ToggleButtonState extends State<ToggleButton> {
         },
         child: AnimatedContainer(
           height: currentButton == index ? 26 : 34,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          margin: currentButton == index ? EdgeInsets.all(4) : EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          margin: currentButton == index ? const EdgeInsets.all(4) : EdgeInsets.zero,
           decoration: BoxDecoration(
             color: currentButton == index ? colors.blue : Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.all(Radius.circular(6)),
+            borderRadius: const BorderRadius.all(Radius.circular(6)),
           ),
           child: Center(
             child: Text(
@@ -70,7 +70,7 @@ class _ToggleButtonState extends State<ToggleButton> {
           height: 34,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
           ),
         ),
         Row(

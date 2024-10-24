@@ -13,6 +13,9 @@ class AppTheme {
         secondary: colors.black,
         primaryContainer: colors.white,
         inversePrimary: colors.blue,
+        tertiary: colors.greenDark,
+        onTertiary: colors.blue,
+        tertiaryContainer: colors.greenDark
       ),
       scaffoldBackgroundColor: colors.grey,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -32,6 +35,9 @@ class AppTheme {
         secondary: colors.grey,
         primaryContainer: colors.blackLight,
         inversePrimary: colors.blueMid,
+        tertiary: colors.grey,
+        onTertiary: colors.blueMid,
+        tertiaryContainer: colors.green
       ),
       scaffoldBackgroundColor: colors.black,
       elevatedButtonTheme: ElevatedButtonThemeData(

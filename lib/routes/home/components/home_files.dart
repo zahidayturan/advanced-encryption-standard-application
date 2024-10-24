@@ -34,7 +34,7 @@ class _HomeFilesState extends State<HomeFiles> {
               height: 200,
               width: 90,
               decoration: BoxDecoration(
-                  color: colors.blue,
+                  color: colors.blue.withOpacity(0.4),
                   borderRadius: const BorderRadius.all(Radius.circular(8))
               ),
             ),
@@ -48,13 +48,13 @@ class _HomeFilesState extends State<HomeFiles> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RegularText(texts: "Dosya İşlemleri",size: 15,color: colors.blue,style: FontStyle.italic,weight: FontWeight.w600,),
+                  RegularText(texts: "Dosya İşlemleri",size: 15,color: Theme.of(context).colorScheme.onTertiary,style: FontStyle.italic,weight: FontWeight.w600,),
                   InkWell(
                       onTap: (){
 
                       },
                       child: BaseContainer(
-                          padding: 2, color: colors.blue, radius: 50,
+                          padding: 2, color: Theme.of(context).colorScheme.onTertiary, radius: 50,
                           child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
                 ],
               ),
@@ -139,7 +139,7 @@ class _HomeFilesState extends State<HomeFiles> {
                             padding: 2,
                             color: Theme.of(context).scaffoldBackgroundColor,
                             radius: 50,
-                            child: Icon(Icons.more_horiz_rounded,size: 20,color: colors.blue))
+                            child: Icon(Icons.more_horiz_rounded,size: 20,color: Theme.of(context).colorScheme.onTertiary))
                       ],
                     )
                   ],
@@ -163,7 +163,7 @@ class _HomeFilesState extends State<HomeFiles> {
       height: 32,
       padding: 8,
       radius: 50,
-      child: Image.asset("assets/icons/sort.png",color: isActive ? colors.blue : colors.greyMid,height: 22),
+      child: Image.asset("assets/icons/sort.png",color: isActive ? Theme.of(context).colorScheme.onTertiary : colors.greyMid,height: 22),
     );
   }
 
@@ -196,7 +196,7 @@ class _HomeFilesState extends State<HomeFiles> {
                 onPressed: () {
 
                 },
-                icon: Image.asset("assets/icons/search.png",height: 22,color: isActive ? colors.blue : colors.greyMid,
+                icon: Image.asset("assets/icons/search.png",height: 22,color: isActive ? Theme.of(context).colorScheme.onTertiary : colors.greyMid,
               )
           ),
         ),

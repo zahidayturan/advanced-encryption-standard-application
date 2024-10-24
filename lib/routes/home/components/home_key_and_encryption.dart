@@ -60,7 +60,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               height: 200,
               width: 110,
               decoration: BoxDecoration(
-                color: colors.greenDark,
+                color: colors.greenDark.withOpacity(0.4),
                 borderRadius: const BorderRadius.all(Radius.circular(8))
               ),
             ),
@@ -74,13 +74,13 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: colors.greenDark,style: FontStyle.italic,weight: FontWeight.w600,),
+                  RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: Theme.of(context).colorScheme.tertiary,style: FontStyle.italic,weight: FontWeight.w600,),
                   onTapWidget(
                       onTap: (){
 
                       },
                       child: BaseContainer(
-                          padding: 2, color: colors.greenDark, radius: 50,
+                          padding: 2, color: Theme.of(context).colorScheme.tertiaryContainer, radius: 50,
                           child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
                 ],
               ),
@@ -135,7 +135,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                 await localStorage.saveBitLength(newBitLength);
               },
               textColor: colors.white,
-              dropdownColor: colors.greenDark,
+              dropdownColor: Theme.of(context).colorScheme.tertiaryContainer,
               fontSize: 13,
               padding: 16,
               initialIndex: initialIndex,
@@ -192,7 +192,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   RichTextWidget(
                       fontSize: 14,
                       texts: const ["Üretilen\n","Anahtarlar"],
-                      colors: [colors.greenDark],
+                      colors: [Theme.of(context).colorScheme.tertiary],
                       fontFamilies: const ["FontMedium","FontBold"]
                   ),
                   Align(
@@ -230,7 +230,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       BaseContainer(
-                          color: colors.greenDark,
+                          color: Theme.of(context).colorScheme.tertiaryContainer,
                           radius: 50,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -273,7 +273,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           BaseContainer(
-                              color: colors.greenDark,
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
                               radius: 50,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -283,7 +283,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                                     colors: [colors.white],
                                     fontFamilies: const ["FontMedium","FontBold"]),
                               )),
-                          Icon(Icons.add_circle_outline_rounded,size: 24,color: colors.greenDark,)
+                          Icon(Icons.add_circle_outline_rounded,size: 24,color: Theme.of(context).colorScheme.tertiary)
                         ],
                       ),
                       const SizedBox(height: 12,),

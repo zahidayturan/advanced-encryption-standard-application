@@ -52,7 +52,7 @@ class _ToggleButtonState extends State<ToggleButton> {
             child: Text(
               name,
               style: TextStyle(
-                color: currentButton == index ? colors.white : colors.blue,
+                color: currentButton == index ? colors.grey : Theme.of(context).colorScheme.onTertiary,
                 fontSize: 13,
               ),
             ),

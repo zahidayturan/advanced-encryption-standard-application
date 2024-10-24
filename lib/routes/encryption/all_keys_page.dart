@@ -3,9 +3,13 @@ import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/base_container.dart';
+import 'package:aes/ui/components/loading.dart';
+import 'package:aes/ui/components/popup_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
+import 'package:aes/ui/components/rich_text.dart';
 import 'package:aes/ui/components/shimmer_box.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class AllKeysPage extends StatefulWidget {
   const AllKeysPage({super.key});
@@ -95,14 +99,17 @@ class _AllKeysPageState extends State<AllKeysPage> {
                         RegularText(
                           texts: item.creationTime,
                         ),
-                        BaseContainer(
-                          padding: 2,
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          radius: 50,
-                          child: Icon(
-                            Icons.more_vert_rounded,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.secondary,
+                        InkWell(
+                          onTapDown: (TapDownDetails details) => _showMoreMenu(details, colors.blueMid, context, item),
+                          child: BaseContainer(
+                            padding: 2,
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            radius: 50,
+                            child: Icon(
+                              Icons.more_vert_rounded,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ),
                       ],
@@ -136,6 +143,135 @@ class _AllKeysPageState extends State<AllKeysPage> {
         padding: EdgeInsets.only(top: 12),
         child: ShimmerBox(height: 120),
       )),
+    );
+  }
+
+  void _showMoreMenu(TapDownDetails details, Color color, BuildContext context, KeyInfo keyInfo) {
+    showPopupMenu(
+      details.globalPosition,
+      Theme.of(context).colorScheme.primaryContainer,
+      36,
+      _popupMenuItems(context),
+          (value) => _handlePopupMenuAction(value,keyInfo),context
+    );
+  }
+
+  List<PopupMenuEntry<int>> _popupMenuItems(BuildContext context) {
+    return [
+      _buildMenuItem(context, Icons.qr_code_2_rounded, "QR ile paylaş", colors.blueMid, 1),
+      _buildMenuItem(context, Icons.delete_outline_rounded, "Kalıcı olarak sil", colors.red, 2),
+    ];
+  }
+
+  PopupMenuItem<int> _buildMenuItem(BuildContext context, IconData icon, String text, Color color, int value) {
+    return PopupMenuItem<int>(
+      value: value,
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 6),
+          Text(text, style: TextStyle(fontSize: 13, color: color)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handlePopupMenuAction(int? value, KeyInfo keyInfo) async {
+    switch (value) {
+      case 1:
+        showQRGenerator(context,keyInfo);
+        break;
+      case 2:
+          _showLoading("Aanhtar siliniyor",context);
+          await _deleteBook(keyInfo);
+          _hideLoading();
+          setState(() {});
+        break;
+    }
+  }
+
+  Future<void> _deleteBook(KeyInfo keyInfo) async {
+    try {
+      await KeyOperations().deleteKeyInfo(keyInfo.id!);
+    } catch (e) {
+      debugPrint("An error occurred: $e");
+    }
+  }
+
+  void _showLoading(String message,BuildContext context) {
+    LoadingDialog.showLoading(context, message: message);
+  }
+
+  void _hideLoading() {
+    LoadingDialog.hideLoading(context);
+  }
+
+  void showQRGenerator(BuildContext context, KeyInfo keyInfo) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  Container(width: 60,height: 4,decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.all(Radius.circular(50))
+                  ),),
+                  const SizedBox(height: 24),
+                  RichTextWidget(
+                    texts: ["QR Kod ", "ile anahtarını paylaş"],
+                    colors: [Theme.of(context).colorScheme.secondary],
+                    fontFamilies: const ["FontBold", "FontMedium"],
+                    fontSize: 16,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Column(
+                children: [
+                  QrImageView(
+                    data: keyInfo.key,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                    backgroundColor: colors.grey,),
+                  const SizedBox(height: 8),
+                  RegularText(
+                    texts: keyInfo.key,
+                    maxLines: 3,
+                    size: 9,
+                    align: TextAlign.center,
+                  ),
+                  RegularText(
+                    texts: keyInfo.creationTime,
+                    maxLines: 3,
+                    size: 9,
+                    align: TextAlign.center,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              RegularText(
+                texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
+                maxLines: 5,
+                size: 15,
+                align: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

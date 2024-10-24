@@ -59,6 +59,14 @@ class FirebaseFirestoreOperation{
     }
   }
 
+  Future<void> deleteKeyInfo(String keyId) async {
+    try {
+      await _firestore.collection('keys').doc(keyId).delete();
+    } catch (e) {
+      print('Error deleting key: $e');
+    }
+  }
+
 
 
 }

@@ -21,4 +21,9 @@ class KeyOperations implements KeyService {
     return key;
   }
 
+  @override
+  Future<void> deleteKeyInfo(String keyId) async {
+    await FirebaseFirestoreOperation().deleteKeyInfo(keyId);
+  }
+
 }

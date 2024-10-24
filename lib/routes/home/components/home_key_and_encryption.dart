@@ -247,6 +247,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
       ),
@@ -257,6 +258,13 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              Center(
+                child: Container(width: 60,height: 4,decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.all(Radius.circular(50))
+                ),),
+              ),
+              const SizedBox(height: 24),
               RichTextWidget(
                   texts: const ["Anahtar ","Üretim Yöntemleri"],
                   colors: [Theme.of(context).colorScheme.secondary],

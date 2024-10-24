@@ -8,4 +8,6 @@ abstract class KeyService {
 
   Future<KeyInfo?> getKeyInfo(String id);
 
+  Future<void> deleteKeyInfo(String keyId);
+
 }

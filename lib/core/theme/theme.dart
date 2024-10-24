@@ -12,6 +12,7 @@ class AppTheme {
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.black,
         primaryContainer: colors.white,
+        inversePrimary: colors.blue,
       ),
       scaffoldBackgroundColor: colors.grey,
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -30,6 +31,7 @@ class AppTheme {
       colorScheme: const ColorScheme.light().copyWith(
         secondary: colors.grey,
         primaryContainer: colors.blackLight,
+        inversePrimary: colors.blueMid,
       ),
       scaffoldBackgroundColor: colors.black,
       elevatedButtonTheme: ElevatedButtonThemeData(

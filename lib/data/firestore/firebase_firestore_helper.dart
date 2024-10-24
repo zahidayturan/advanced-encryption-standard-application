@@ -39,17 +39,26 @@ class FirebaseFirestoreOperation{
       QuerySnapshot keySnapshot = await _firestore.collection('keys').get();
 
       if (keySnapshot.docs.isNotEmpty) {
-        return keySnapshot.docs
+        List<KeyInfo> keyList = keySnapshot.docs
             .map((doc) => KeyInfo.fromJson(doc.data() as Map<String, dynamic>))
             .toList();
+
+        keyList.sort((a, b) {
+          DateTime dateA = DateTime.parse(a.creationTime);
+          DateTime dateB = DateTime.parse(b.creationTime);
+          return dateB.compareTo(dateA);
+        });
+
+        return keyList;
       } else {
-        return null;
+        return [];
       }
     } catch (e) {
       print('Error fetching all key info: $e');
-      return null;
+      return [];
     }
   }
+
 
 
 }

@@ -227,11 +227,11 @@ class _AllKeysPageState extends State<AllKeysPage> {
                 children: [
                   Container(width: 60,height: 4,decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.all(Radius.circular(50))
+                      borderRadius: const BorderRadius.all(Radius.circular(50))
                   ),),
                   const SizedBox(height: 24),
                   RichTextWidget(
-                    texts: ["QR Kod ", "ile anahtarını paylaş"],
+                    texts: const ["QR Kod ", "ile anahtarını paylaş"],
                     colors: [Theme.of(context).colorScheme.secondary],
                     fontFamilies: const ["FontBold", "FontMedium"],
                     fontSize: 16,
@@ -262,7 +262,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                 ],
               ),
               const SizedBox(height: 8),
-              RegularText(
+              const RegularText(
                 texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
                 maxLines: 5,
                 size: 15,

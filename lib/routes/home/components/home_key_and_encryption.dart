@@ -1,7 +1,7 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
-import 'package:aes/routes/encryption/qr_reader.dart';
 import 'package:aes/routes/encryption/voice_recorder.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
@@ -19,6 +19,29 @@ class HomeKeyAndEncryption extends StatefulWidget {
 class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
 
   AppColors colors = AppColors();
+  final localStorage = GetLocalStorage();
+
+  List<String> bitLengthList = ["128 bit", "192 bit", "256 bit"];
+  int initialIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialBitLength();
+  }
+
+  Future<void> _loadInitialBitLength() async {
+    int savedBitLength = localStorage.getBitLength();
+    if (savedBitLength == 128) {
+      setState(() {
+        initialIndex = 0;
+      });
+    }else if(savedBitLength == 192){
+      setState(() {
+        initialIndex = 1;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,15 +111,23 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           children: [
             const RegularText(texts: "Güvenlik Seviyesi",size: 13,),
             CustomDropdownMenu(
-              list: const ["128 bit","192 bit","256 bit"],
+              list: bitLengthList,
+              onChanged: (value) async {
+                int newBitLength = 256;
+                if(value.contains("192")){
+                  newBitLength = 192;
+                }else if(value.contains("128")){
+                  newBitLength = 128;
+                }
+                await localStorage.saveBitLength(newBitLength);
+              },
               textColor: colors.white,
               dropdownColor: colors.greenDark,
               fontSize: 13,
               padding: 16,
-              initialIndex: 0,
+              initialIndex: initialIndex,
               controller: _bitSizeController,
             )
-
           ],
         ));
   }
@@ -261,7 +292,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               Center(
                 child: Container(width: 60,height: 4,decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.all(Radius.circular(50))
+                    borderRadius: const BorderRadius.all(Radius.circular(50))
                 ),),
               ),
               const SizedBox(height: 24),
@@ -279,7 +310,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: "helloworld",type: "qr",)),
+                    MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
                     //MaterialPageRoute(builder: (context) => QRCodeReadPage()),
                   );
                 },
@@ -291,7 +322,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => VoiceProductionPage()),
+                    MaterialPageRoute(builder: (context) => const VoiceProductionPage()),
                   );
                 },
               ),

@@ -1,7 +1,9 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/home/components/home_files.dart';
 import 'package:aes/routes/home/components/home_key_and_encryption.dart';
 import 'package:aes/routes/home/components/home_top_bar.dart';
+import 'package:aes/ui/components/shimmer_box.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   AppColors colors = AppColors();
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: 28,),
                 HomeFiles()
               ],
-            ),
+            )
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
+import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
 import 'package:aes/routes/encryption/voice_recorder.dart';
@@ -7,10 +8,12 @@ import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
+import 'package:aes/ui/components/shimmer_box.dart';
 import 'package:flutter/material.dart';
 
 class HomeKeyAndEncryption extends StatefulWidget {
-  const HomeKeyAndEncryption({super.key});
+
+  const HomeKeyAndEncryption({super.key,});
 
   @override
   State<HomeKeyAndEncryption> createState() => _HomeKeyAndEncryptionState();
@@ -20,6 +23,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
 
   AppColors colors = AppColors();
   final localStorage = GetLocalStorage();
+  final keyOperations = KeyOperations();
 
   List<String> bitLengthList = ["128 bit", "192 bit", "256 bit"];
   int initialIndex = 2;
@@ -81,20 +85,29 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                 ],
               ),
               const SizedBox(height: 12,),
-              bitSize(),
-              const SizedBox(height: 12,),
-              Row(children: [
-                Expanded(
-                    flex: 2,
-                    child: allKeys()),
-                const SizedBox(width: 12,),
-                Expanded(
-                    flex: 3,
-                    child: generateKey())
-              ],),
-              const SizedBox(height: 12,),
-              encryptFile()
-
+              FutureBuilder(
+                future: keyOperations.getAllKeyInfo(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return bodyLoading();
+                  }
+                  return  Column(
+                    children: [
+                      bitSize(),
+                      const SizedBox(height: 12,),
+                      Row(children: [
+                        Expanded(
+                            flex: 2,
+                            child: allKeys(snapshot.data!.length)),
+                        const SizedBox(width: 12,),
+                        Expanded(
+                            flex: 3,
+                            child: generateKey(snapshot.data!.isEmpty))
+                      ],),
+                      const SizedBox(height: 12,),
+                      encryptFile()
+                    ],);
+                },),
             ],
           ),
         )
@@ -132,7 +145,27 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         ));
   }
 
-  Widget allKeys(){
+  Widget bodyLoading(){
+    return const Column(
+      children: [
+        ShimmerBox(height: 36),
+        SizedBox(height: 12,),
+        Row(children: [
+          Expanded(
+              flex: 2,
+              child: ShimmerBox(height: 132)),
+          SizedBox(width: 12,),
+          Expanded(
+              flex: 3,
+              child: ShimmerBox(height: 132))
+        ],),
+        SizedBox(height: 12,),
+        ShimmerBox(height: 89)
+      ],
+    );
+  }
+
+  Widget allKeys(int allKeyCount){
     return BaseContainer(
         height: 132,
         padding: 0,
@@ -162,9 +195,9 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                       colors: [colors.greenDark],
                       fontFamilies: const ["FontMedium","FontBold"]
                   ),
-                  const Align(
+                  Align(
                       alignment: Alignment.bottomRight,
-                      child: RegularText(texts: "Üretilmiş\nanahtar\nyok",size: 11,align: TextAlign.end,))
+                      child: RegularText(texts: allKeyCount == 0 ? "Üretilmiş\nanahtar\nyok" : "Üretilmiş\nanahtar\nsayısı $allKeyCount",size: 11,align: TextAlign.end,))
                 ],
               ),
             )
@@ -173,7 +206,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     ));
   }
 
-  Widget generateKey(){
+  Widget generateKey(bool activeKey){
     return BaseContainer(
         height: 132,
         padding: 0,
@@ -207,7 +240,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                                 colors: [colors.white],
                                 fontFamilies: const ["FontMedium","FontBold"]),
                           )),
-                      const RegularText(texts: "Aktif anahtar\nyok",size: 11,align: TextAlign.end,)
+                      RegularText(texts: activeKey ? "Aktif anahtar\nyok" : "Aktif anahtar\nbulundu",size: 11,align: TextAlign.end,)
                     ],
                   ),
                 ),

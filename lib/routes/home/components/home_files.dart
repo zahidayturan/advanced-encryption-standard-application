@@ -1,7 +1,9 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/models/file_info.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
+import 'package:aes/ui/components/shimmer_box.dart';
 import 'package:aes/ui/components/toggle_button.dart';
 import 'package:flutter/material.dart';
 
@@ -54,15 +56,25 @@ class _HomeFilesState extends State<HomeFiles> {
                 ],
               ),
               const SizedBox(height: 12,),
-              fileToggle(),
-              const SizedBox(height: 12,),
-              Row(children: [
-                swapButton(),
-                const SizedBox(width: 12,),
-                Expanded(child: searchBar())
-              ],),
-              const SizedBox(height: 12,),
-              files()
+              FutureBuilder<List<FileInfo>>(
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return bodyLoading();
+                    }
+                    return Column(
+                      children: [
+                        fileToggle(),
+                        const SizedBox(height: 12,),
+                        Row(children: [
+                          swapButton(),
+                          const SizedBox(width: 12,),
+                          Expanded(child: searchBar())
+                        ],),
+                        const SizedBox(height: 12,),
+                        files(snapshot.data!)
+                      ],
+                    );
+                  },)
             ],
           ),
         ),
@@ -81,7 +93,7 @@ class _HomeFilesState extends State<HomeFiles> {
         },);
   }
 
-  Widget files(){
+  Widget files(List<FileInfo> list){
     return BaseContainer(
         height: 96,
         padding: 10,
@@ -165,4 +177,19 @@ class _HomeFilesState extends State<HomeFiles> {
     );
   }
 
+  Widget bodyLoading(){
+    return Column(
+      children: [
+        const ShimmerBox(height: 34),
+        const SizedBox(height: 12,),
+        Row(children: [
+          ShimmerBox(height: 32,width:32, borderRadius: BorderRadius.circular(50)),
+          const SizedBox(width: 12,),
+          const Expanded(child: ShimmerBox(height: 32))
+        ],),
+        const SizedBox(height: 12,),
+        const ShimmerBox(height: 96),
+      ],
+    );
+  }
 }

@@ -22,6 +22,7 @@ dependencies:
   qr_flutter: ^4.0.0
   get_storage: ^2.1.1
   get: ^4.6.5
+  flutter_native_splash: ^2.0.8
 
 
 dev_dependencies:
@@ -36,6 +37,7 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/brands/
 
   fonts:
     - family: FontRegular

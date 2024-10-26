@@ -2,6 +2,7 @@ import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
+import 'package:aes/routes/encryption/file_encryption.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
 import 'package:aes/routes/encryption/voice_recorder.dart';
 import 'package:aes/ui/components/base_container.dart';
@@ -9,6 +10,7 @@ import 'package:aes/ui/components/dropdown_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
 import 'package:aes/ui/components/shimmer_box.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class HomeKeyAndEncryption extends StatefulWidget {
@@ -47,70 +49,61 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     }
   }
 
+  Future<void> pickAndEncryptFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FileEncryption(filePath: file.path)),
+      );
+    } else {
+      print("Dosya seçilmedi.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return  Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Positioned(
-          right: -54,
-          top: 44,
-          child: RotationTransition(
-            turns: const AlwaysStoppedAnimation(30 / 360),
-            child: Container(
-              height: 200,
-              width: 110,
-              decoration: BoxDecoration(
-                color: colors.greenDark.withOpacity(0.4),
-                borderRadius: const BorderRadius.all(Radius.circular(8))
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: Theme.of(context).colorScheme.tertiary,style: FontStyle.italic,weight: FontWeight.w600,),
-                  onTapWidget(
-                      onTap: (){
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: Theme.of(context).colorScheme.tertiary,style: FontStyle.italic,weight: FontWeight.w600,),
+            onTapWidget(
+                onTap: (){
 
-                      },
-                      child: BaseContainer(
-                          padding: 2, color: Theme.of(context).colorScheme.tertiaryContainer, radius: 50,
-                          child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
-                ],
-              ),
-              const SizedBox(height: 12,),
-              FutureBuilder(
-                future: keyOperations.getAllKeyInfo(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return bodyLoading();
-                  }
-                  return  Column(
-                    children: [
-                      bitSize(),
-                      const SizedBox(height: 12,),
-                      Row(children: [
-                        Expanded(
-                            flex: 2,
-                            child: allKeys(snapshot.data!.length)),
-                        const SizedBox(width: 12,),
-                        Expanded(
-                            flex: 3,
-                            child: generateKey(snapshot.data!.isEmpty))
-                      ],),
-                      const SizedBox(height: 12,),
-                      encryptFile()
-                    ],);
-                },),
-            ],
-          ),
-        )
+                },
+                child: BaseContainer(
+                    padding: 2, color: Theme.of(context).colorScheme.tertiaryContainer, radius: 50,
+                    child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
+          ],
+        ),
+        const SizedBox(height: 12,),
+        FutureBuilder(
+          future: keyOperations.getAllKeyInfo(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return bodyLoading();
+            }
+            return  Column(
+              children: [
+                bitSize(),
+                const SizedBox(height: 12,),
+                Row(children: [
+                  Expanded(
+                      flex: 2,
+                      child: allKeys(snapshot.data!.length)),
+                  const SizedBox(width: 12,),
+                  Expanded(
+                      flex: 3,
+                      child: generateKey(snapshot.data!.isEmpty))
+                ],),
+                const SizedBox(height: 12,),
+                encryptFile(context)
+              ],);
+          },),
       ],
     );
   }
@@ -250,49 +243,69 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         ));
   }
 
-  Widget encryptFile(){
+  Widget encryptFile(BuildContext context) {
     return BaseContainer(
-        padding: 0,
-        child: Stack(
-          children: [
-            Positioned(
-              right: 54,
-              bottom: 4,
-              child: RotationTransition(
-                  turns: const AlwaysStoppedAnimation(30 / 360),
-                  child: Image.asset("assets/icons/addFile.png",height: 90,color: Theme.of(context).scaffoldBackgroundColor)),
-            ),
-            onTapWidget(
-                onTap: (){},
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      padding: 0,
+      child: Stack(
+        children: [
+          Positioned(
+            right: 54,
+            bottom: 4,
+            child: RotationTransition(
+                turns: const AlwaysStoppedAnimation(30 / 360),
+                child: Image.asset(
+                  "assets/icons/addFile.png",
+                  height: 90,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                )),
+          ),
+          GestureDetector(
+            onTap: () {
+              pickAndEncryptFile();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          BaseContainer(
-                              color: Theme.of(context).colorScheme.tertiaryContainer,
-                              radius: 50,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: RichTextWidget(
-                                    texts: const ["Dosya ","Şifrele"],
-                                    fontSize: 14,
-                                    colors: [colors.white],
-                                    fontFamilies: const ["FontMedium","FontBold"]),
-                              )),
-                          Icon(Icons.add_circle_outline_rounded,size: 24,color: Theme.of(context).colorScheme.tertiary)
-                        ],
+                      BaseContainer(
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
+                        radius: 50,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: RichTextWidget(
+                            texts: const ["Dosya ", "Şifrele"],
+                            fontSize: 14,
+                            colors: [Colors.white],
+                            fontFamilies: const ["FontMedium", "FontBold"],
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 12,),
-                      const Center(child: RegularText(texts: "Dosya seçmek için dokunun",size: 13,)),
-                      const SizedBox(height: 12,),
-                    ],),
-                ))
-          ],
-        ));
+                      Icon(
+                        Icons.add_circle_outline_rounded,
+                        size: 24,
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: RegularText(
+                      texts: "Dosya seçmek için dokunun",
+                      size: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget onTapWidget({required void Function()? onTap, required Widget child}) {

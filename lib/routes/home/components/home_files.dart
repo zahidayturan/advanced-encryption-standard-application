@@ -23,65 +23,43 @@ class _HomeFilesState extends State<HomeFiles> {
 
   @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return  Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Positioned(
-          left: -54,
-          top: 42,
-          child: RotationTransition(
-            turns: const AlwaysStoppedAnimation(30 / 360),
-            child: Container(
-              height: 200,
-              width: 90,
-              decoration: BoxDecoration(
-                  color: colors.blue.withOpacity(0.4),
-                  borderRadius: const BorderRadius.all(Radius.circular(8))
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RegularText(texts: "Dosya İşlemleri",size: 15,color: Theme.of(context).colorScheme.onTertiary,style: FontStyle.italic,weight: FontWeight.w600,),
-                  InkWell(
-                      onTap: (){
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            RegularText(texts: "Dosya İşlemleri",size: 15,color: Theme.of(context).colorScheme.onTertiary,style: FontStyle.italic,weight: FontWeight.w600,),
+            InkWell(
+                onTap: (){
 
-                      },
-                      child: BaseContainer(
-                          padding: 2, color: Theme.of(context).colorScheme.onTertiary, radius: 50,
-                          child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
-                ],
-              ),
-              const SizedBox(height: 12,),
-              fileToggle(),
-              const SizedBox(height: 12,),
-              FutureBuilder<List<FileInfo>?>(
-                future: fileOperations.getAllFileInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return bodyLoading();
-                    }
-                    return Column(
-                      children: [
-                        Row(children: [
-                          swapButton(snapshot.data!.isNotEmpty),
-                          const SizedBox(width: 12,),
-                          Expanded(child: searchBar(snapshot.data!.isNotEmpty))
-                        ],),
-                        const SizedBox(height: 12,),
-                        files(snapshot.data!)
-                      ],
-                    );
-                  },)
-            ],
-          ),
+                },
+                child: BaseContainer(
+                    padding: 2, color: Theme.of(context).colorScheme.onTertiary, radius: 50,
+                    child: Icon(Icons.question_mark_sharp,size: 14,color: colors.grey)))
+          ],
         ),
+        const SizedBox(height: 12,),
+        fileToggle(),
+        const SizedBox(height: 12,),
+        FutureBuilder<List<FileInfo>?>(
+          future: fileOperations.getAllFileInfo(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return bodyLoading();
+              }
+              return Column(
+                children: [
+                  Row(children: [
+                    swapButton(snapshot.data!.isNotEmpty),
+                    const SizedBox(width: 12,),
+                    Expanded(child: searchBar(snapshot.data!.isNotEmpty))
+                  ],),
+                  const SizedBox(height: 12,),
+                  files(snapshot.data!)
+                ],
+              );
+            },)
       ],
     );
   }
@@ -211,7 +189,7 @@ class _HomeFilesState extends State<HomeFiles> {
         Row(children: [
           ShimmerBox(height: 32,width:32, borderRadius: BorderRadius.circular(50)),
           const SizedBox(width: 12,),
-          const Expanded(child: ShimmerBox(height: 32))
+          ShimmerBox(height: 32,borderRadius: BorderRadius.circular(50),)
         ],),
         const SizedBox(height: 12,),
         const ShimmerBox(height: 96),

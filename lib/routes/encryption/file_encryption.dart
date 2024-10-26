@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/models/file_info.dart';
+import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 
 class FileEncryption extends StatefulWidget {
   final String? filePath;
@@ -18,6 +21,7 @@ class FileEncryption extends StatefulWidget {
 class _FileEncryptionState extends State<FileEncryption> {
   AppColors colors = AppColors();
   KeyOperations keyOperations = KeyOperations();
+  FileOperations fileOperations = FileOperations();
   String originalFileBytes = "";
   String encryptedFileBytes = "";
 
@@ -52,19 +56,25 @@ class _FileEncryptionState extends State<FileEncryption> {
       final iv = encrypt.IV.fromLength(16);
 
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
-
       final base64String = base64.encode(fileBytes);
+
       final encrypted = encrypter.encrypt(base64String, iv: iv);
+      final encryptedBytes = base64.decode(encrypted.base64);
 
       setState(() {
         encryptedFileBytes = encrypted.base64;
       });
 
-      print("Encrypted Base64: ${encrypted.base64}");
+      final fileName = path.basename(widget.filePath!);
+      final fileExtension = path.extension(widget.filePath!);
 
+      FileInfo newFile = FileInfo(
+          creationTime: DateTime.now().toString(),
+          type: fileExtension,
+          name: fileName,
+          keyId: "1");
 
-      //final decrypted = encrypter.decrypt(encrypted, iv: iv);
-      //final decryptedBytes = base64.decode(decrypted);
+      await fileOperations.insertFileInfo(newFile,encryptedBytes);
     }
   }
 
@@ -107,7 +117,7 @@ class _FileEncryptionState extends State<FileEncryption> {
                         child: ElevatedButton(
                           onPressed: () => _handleEncryptFile(context),
                           child: RegularText(
-                            texts: "Dosyayı Şifrele",
+                            texts: "Dosyayı Şifrele ve Yükle",
                             size: 15,
                             color: colors.grey,
                           ),
@@ -115,10 +125,10 @@ class _FileEncryptionState extends State<FileEncryption> {
                       ),
                     ],
                   ),
-                  Text(originalFileBytes.length.toString(),style: TextStyle(color: Theme.of(context).colorScheme.secondary,fontSize: 7),),
-                  Text(originalFileBytes,style: TextStyle(color: Theme.of(context).colorScheme.secondary,fontSize: 7),),
-                  Text(encryptedFileBytes.length.toString(),style: TextStyle(color: colors.green,fontSize: 7),),
-                  Text(encryptedFileBytes,style: TextStyle(color: colors.green,fontSize: 7),),
+                  Text(originalFileBytes.length.toString(), style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 7)),
+                  Text(originalFileBytes, style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 7)),
+                  Text(encryptedFileBytes.length.toString(), style: TextStyle(color: colors.green, fontSize: 7)),
+                  Text(encryptedFileBytes, style: TextStyle(color: colors.green, fontSize: 7)),
                 ],
               ),
             ),

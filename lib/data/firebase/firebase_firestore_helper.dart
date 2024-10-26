@@ -68,6 +68,15 @@ class FirebaseFirestoreOperation{
     }
   }
 
+  Future<void> addFileInfoToFirestore(FileInfo fileInfo) async {
+    try {
+      Map<String, dynamic> fileData = fileInfo.toJson();
+      await _firestore.collection('files').doc(fileInfo.id).set(fileData);
+    } catch (e) {
+      print('Add Key Error: $e');
+    }
+  }
+
   Future<List<FileInfo>?> getAllFileInfo() async {
     try {
       QuerySnapshot fileSnapshot = await _firestore.collection('files').get();

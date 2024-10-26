@@ -1,4 +1,4 @@
-import 'package:aes/data/firestore/firebase_firestore_helper.dart';
+import 'package:aes/data/firebase/firebase_firestore_helper.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/key_service.dart';
 

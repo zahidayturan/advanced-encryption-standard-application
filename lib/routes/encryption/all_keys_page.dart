@@ -120,6 +120,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                     RegularText(
                       texts: item.generateType,
                     ),
+                    SizedBox(height: 8,),
                     Text(
                       item.key,
                       style: TextStyle(

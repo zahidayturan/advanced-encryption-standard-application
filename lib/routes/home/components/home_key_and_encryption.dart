@@ -93,11 +93,11 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                 const SizedBox(height: 12,),
                 Row(children: [
                   Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: allKeys(snapshot.data!.length)),
                   const SizedBox(width: 12,),
                   Expanded(
-                      flex: 3,
+                      flex: 5,
                       child: generateKey(snapshot.data!.isEmpty))
                 ],),
                 const SizedBox(height: 12,),
@@ -153,7 +153,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               child: ShimmerBox(height: 132))
         ],),
         SizedBox(height: 12,),
-        ShimmerBox(height: 89)
+        ShimmerBox(height: 84)
       ],
     );
   }
@@ -228,18 +228,15 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                         children: [
                           Icon(
                             Icons.vpn_key_outlined,
-                            size: 24,
+                            size: 22,
                             color: Theme.of(context).colorScheme.tertiary,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: RichTextWidget(
-                                texts: const ["Anahtar\n","Üret"],
-                                fontSize: 15,
-                                align: TextAlign.end,
-                                colors: [Theme.of(context).colorScheme.tertiary],
-                                fontFamilies: const ["FontMedium","FontBold"]),
-                          ),
+                          RichTextWidget(
+                              texts: const ["Anahtar\n","Üret"],
+                              fontSize: 15,
+                              align: TextAlign.end,
+                              colors: [Theme.of(context).colorScheme.tertiary],
+                              fontFamilies: const ["FontMedium","FontBold"]),
                         ],
                       ),
                       RegularText(texts: activeKey ? "Aktif anahtar\nyok" : "Aktif anahtar\nbulundu",size: 11,align: TextAlign.end,)
@@ -280,14 +277,11 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: RichTextWidget(
-                          texts: const ["Dosya ", "Şifrele"],
-                          fontSize: 15,
-                          colors: [Theme.of(context).colorScheme.tertiary],
-                          fontFamilies: const ["FontMedium", "FontBold"],
-                        ),
+                      RichTextWidget(
+                        texts: const ["Dosya ", "Şifrele"],
+                        fontSize: 15,
+                        colors: [Theme.of(context).colorScheme.tertiary],
+                        fontFamilies: const ["FontMedium", "FontBold"],
                       ),
                       Icon(
                         Icons.add_circle_outline_rounded,

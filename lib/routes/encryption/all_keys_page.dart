@@ -97,7 +97,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         RegularText(
-                          texts: item.creationTime,
+                          texts: item.name != "" ? item.name : "İsimsiz Anahtar",
                         ),
                         InkWell(
                           onTapDown: (TapDownDetails details) => _showMoreMenu(details, colors.blueMid, context, item),
@@ -113,6 +113,9 @@ class _AllKeysPageState extends State<AllKeysPage> {
                           ),
                         ),
                       ],
+                    ),
+                    RegularText(
+                      texts: item.creationTime,
                     ),
                     RegularText(
                       texts: "AES-${item.bitLength} bit",
@@ -220,56 +223,65 @@ class _AllKeysPageState extends State<AllKeysPage> {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  Container(width: 60,height: 4,decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: const BorderRadius.all(Radius.circular(50))
-                  ),),
-                  const SizedBox(height: 24),
-                  RichTextWidget(
-                    texts: const ["QR Kod ", "ile anahtarını paylaş"],
-                    colors: [Theme.of(context).colorScheme.secondary],
-                    fontFamilies: const ["FontBold", "FontMedium"],
-                    fontSize: 16,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Column(
-                children: [
-                  QrImageView(
-                    data: keyInfo.key,
-                    version: QrVersions.auto,
-                    size: 200.0,
-                    backgroundColor: colors.grey,),
-                  const SizedBox(height: 8),
-                  RegularText(
-                    texts: keyInfo.key,
-                    maxLines: 3,
-                    size: 9,
-                    align: TextAlign.center,
-                  ),
-                  RegularText(
-                    texts: keyInfo.creationTime,
-                    maxLines: 3,
-                    size: 9,
-                    align: TextAlign.center,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const RegularText(
-                texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
-                maxLines: 5,
-                size: 15,
-                align: TextAlign.center,
-              ),
-            ],
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Container(width: 60,height: 4,decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius: const BorderRadius.all(Radius.circular(50))
+                    ),),
+                    const SizedBox(height: 24),
+                    RichTextWidget(
+                      texts: const ["QR Kod ", "ile anahtarını paylaş"],
+                      colors: [Theme.of(context).colorScheme.secondary],
+                      fontFamilies: const ["FontBold", "FontMedium"],
+                      fontSize: 16,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Column(
+                  children: [
+                    RegularText(
+                      texts: keyInfo.name != "" ? keyInfo.name : "İsimsiz Anahtar",
+                      maxLines: 3,
+                      size: 12,
+                      align: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    QrImageView(
+                      data: keyInfo.key,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                      backgroundColor: colors.grey,),
+                    const SizedBox(height: 4),
+                    RegularText(
+                      texts: keyInfo.key,
+                      maxLines: 3,
+                      size: 9,
+                      align: TextAlign.center,
+                    ),
+                    RegularText(
+                      texts: keyInfo.creationTime,
+                      size: 10,
+                      align: TextAlign.center,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const RegularText(
+                  texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
+                  maxLines: 5,
+                  size: 14,
+                  align: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         );
       },

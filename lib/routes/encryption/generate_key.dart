@@ -5,10 +5,14 @@ import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/regular_text.dart';
+import 'package:aes/ui/components/text_field.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:qr_flutter/qr_flutter.dart';
 
 class GenerateKey extends StatefulWidget {
   final String codeOrPath;
@@ -26,11 +30,20 @@ class _GenerateKeyState extends State<GenerateKey> {
   KeyOperations keyOperations = KeyOperations();
   final localStorage = GetLocalStorage();
 
+  final _nameController = TextEditingController(text: "Anahtarım");
+  bool checkedValue = true;
+
 
   @override
   void initState() {
     super.initState();
     _loadBitLength();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadBitLength() async {
@@ -39,8 +52,6 @@ class _GenerateKeyState extends State<GenerateKey> {
       bitLength = savedBitLength;
     });
   }
-
-
 
   String generatePaddedKey(String code, int bitLength) {
     int targetLength = bitLength ~/ 8;
@@ -110,26 +121,97 @@ class _GenerateKeyState extends State<GenerateKey> {
 
       KeyInfo newKey = KeyInfo(
         creationTime: DateTime.now().toString(),
+        name: _nameController.text,
         bitLength: bitLength.toString(),
         generateType: widget.type,
         key: generatedKey,
       );
       debugPrint(newKey.toJson().toString());
-      await keyOperations.insertKeyInfo(newKey);
+      if(checkedValue){
+        await keyOperations.insertKeyInfo(newKey);
+      }
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: RegularText(texts: "Anahtar başarıyla üretildi",color: colors.grey,),backgroundColor: colors.green,behavior: SnackBarBehavior.floating,),
-      );
+      LoadingDialog.hideLoading(context).then((value) => showKeyDetails(context,newKey));
     } catch (e) {
       debugPrint("Bir hata oluştu: $e");
+      LoadingDialog.hideLoading(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: RegularText(texts: "Anahtar üretimi sırasında hata oluştu",color: colors.grey,),backgroundColor: colors.red,behavior: SnackBarBehavior.floating,),
       );
-    } finally {
-      LoadingDialog.hideLoading(context);
     }
   }
 
+  void showKeyDetails(BuildContext context, KeyInfo keyInfo) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(width: 60,height: 4,decoration: BoxDecoration(
+                    color: colors.green,
+                    borderRadius: const BorderRadius.all(Radius.circular(50))
+                ),),
+                const SizedBox(height: 16),
+                RegularText(texts: "Anahtar üretildi", size: 16, weight: FontWeight.bold,color: colors.green,),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: RegularText(
+                        texts: keyInfo.key,
+                        maxLines: 3,
+                        size: 13,
+                        align: TextAlign.center,
+                        color: colors.orange,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.secondary),
+                      onPressed: () {Clipboard.setData(ClipboardData(text: keyInfo.key));},
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                RegularText(
+                  texts: keyInfo.creationTime,
+                  maxLines: 3,
+                  size: 11,
+                  align: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                QrImageView(
+                  data: keyInfo.key,
+                  version: QrVersions.auto,
+                  size: 150.0,
+                  backgroundColor: colors.grey,),
+                const SizedBox(height: 8),
+                const RegularText(
+                  texts: "Üretilen anahtarı paylaşmak isterseniz, diğer cihazda QR ile anahtar al menüsünde bu kodu okutunuz.",
+                  maxLines: 5,
+                  size: 13,
+                  align: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,9 +229,61 @@ class _GenerateKeyState extends State<GenerateKey> {
                 const EPageAppBar(
                   texts: "Anahtar Üretimi",
                 ),
-                RegularText(texts: bitLength.toString()),
-                RegularText(texts: widget.codeOrPath),
-                RegularText(texts: widget.type),
+                const SizedBox(height: 12),
+                const FullTextField(
+                    fieldName: "Şifreleme Verisi",
+                    hintText: "Alındı",
+                    readOnly: true,
+                    myIcon: Icons.info_outline_rounded),
+                const SizedBox(height: 24),
+                FullTextField(
+                    fieldName: "Anahtar Güvenliği",
+                    hintText: "AES-$bitLength",
+                    readOnly: true,
+                    myIcon: Icons.security_rounded),
+                const SizedBox(height: 24),
+                FullTextField(
+                    fieldName: "Anahtar Üretim Türü",
+                    hintText: widget.type == "qr" ? "QR Kod ile" : "Ses ile",
+                    readOnly: true,
+                    myIcon: Icons.merge_type_rounded),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FullTextField(
+                          fieldName: "Anahtar Kayıt",
+                          hintText: checkedValue ? "Kaydedilsin" : "Kaydedilmesin",
+                          readOnly: true,
+                          myIcon: Icons.save),
+                    ),
+                    SizedBox(
+                      width: 32,
+                      child: Checkbox(
+                        value: checkedValue,
+                        activeColor: Theme.of(context).colorScheme.tertiary,
+                        checkColor: Theme.of(context).primaryColor,
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.tertiary
+                        ),
+                        onChanged: (newValue) {
+                          setState(() {
+                            checkedValue = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                FullTextField(
+                    myController: _nameController,
+                    fieldName: "Anahtar İsmi",
+                    hintText: "Anahtarım",
+                    readOnly: false,
+                    myIcon: Icons.key_rounded),
+                //RegularText(texts: widget.codeOrPath),
+                const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
@@ -157,14 +291,14 @@ class _GenerateKeyState extends State<GenerateKey> {
                         onPressed: () => _handleAdKey(context),
                         child: RegularText(
                           texts: "Anahtarı Üret",
-                          size: 15,
+                          size: 16,
                           color: colors.grey,
                         ),
                       ),
                     ),
                   ],
                 ),
-                Text(generatedKey,style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                const SizedBox(height: 24),
               ],
             ),
           ),

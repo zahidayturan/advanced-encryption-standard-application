@@ -18,4 +18,9 @@ class FileOperations implements FileService {
     await FirebaseStorageOperation().uploadFileToFirebase(fileInfo, encryptedBytes);
   }
 
+  @override
+  Future<void>deleteFileInfo(FileInfo fileInfo) async {
+    await FirebaseStorageOperation().deleteFileFromFirebase(fileInfo);
+  }
+
 }

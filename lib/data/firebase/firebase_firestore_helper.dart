@@ -110,6 +110,14 @@ class FirebaseFirestoreOperation{
     }
   }
 
+  Future<void> deleteFileInfo(String fileId) async {
+    try {
+      await _firestore.collection('files').doc(fileId).delete();
+    } catch (e) {
+      print('Error deleting file: $e');
+    }
+  }
+
 
 
 

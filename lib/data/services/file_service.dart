@@ -9,4 +9,6 @@ abstract class FileService {
 
   Future<void> insertFileInfo(FileInfo fileInfo,Uint8List encryptedBytes);
 
+  Future<void>deleteFileInfo(FileInfo fileInfo);
+
 }

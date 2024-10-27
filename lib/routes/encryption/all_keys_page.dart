@@ -188,15 +188,15 @@ class _AllKeysPageState extends State<AllKeysPage> {
         showQRGenerator(context,keyInfo);
         break;
       case 2:
-          _showLoading("Aanhtar siliniyor",context);
-          await _deleteBook(keyInfo);
+          _showLoading("Anahtar siliniyor",context);
+          await _deleteKey(keyInfo);
           _hideLoading();
           setState(() {});
         break;
     }
   }
 
-  Future<void> _deleteBook(KeyInfo keyInfo) async {
+  Future<void> _deleteKey(KeyInfo keyInfo) async {
     try {
       await KeyOperations().deleteKeyInfo(keyInfo.id!);
     } catch (e) {

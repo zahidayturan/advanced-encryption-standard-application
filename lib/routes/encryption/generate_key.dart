@@ -180,7 +180,20 @@ class _GenerateKeyState extends State<GenerateKey> {
                     ),
                     IconButton(
                       icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.secondary),
-                      onPressed: () {Clipboard.setData(ClipboardData(text: keyInfo.key));},
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: keyInfo.key));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: RegularText(texts: 'Anahtar panoya kopyalandı',color: colors.grey,),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          backgroundColor: colors.green,
+                          margin: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height - 100),
+                        ));
+
+                        },
                     ),
                   ],
                 ),
@@ -234,18 +247,21 @@ class _GenerateKeyState extends State<GenerateKey> {
                     fieldName: "Şifreleme Verisi",
                     hintText: "Alındı",
                     readOnly: true,
+                    border: false,
                     myIcon: Icons.info_outline_rounded),
                 const SizedBox(height: 24),
                 FullTextField(
                     fieldName: "Anahtar Güvenliği",
                     hintText: "AES-$bitLength",
                     readOnly: true,
+                    border: false,
                     myIcon: Icons.security_rounded),
                 const SizedBox(height: 24),
                 FullTextField(
                     fieldName: "Anahtar Üretim Türü",
                     hintText: widget.type == "qr" ? "QR Kod ile" : "Ses ile",
                     readOnly: true,
+                    border: false,
                     myIcon: Icons.merge_type_rounded),
                 const SizedBox(height: 24),
                 Row(
@@ -255,6 +271,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                           fieldName: "Anahtar Kayıt",
                           hintText: checkedValue ? "Kaydedilsin" : "Kaydedilmesin",
                           readOnly: true,
+                          border: false,
                           myIcon: Icons.save),
                     ),
                     SizedBox(
@@ -281,6 +298,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                     fieldName: "Anahtar İsmi",
                     hintText: "Anahtarım",
                     readOnly: false,
+                    border: true,
                     myIcon: Icons.key_rounded),
                 //RegularText(texts: widget.codeOrPath),
                 const SizedBox(height: 24),

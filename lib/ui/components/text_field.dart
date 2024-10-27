@@ -9,6 +9,7 @@ class FullTextField extends StatelessWidget {
   final IconData myIcon;
   final Color? prefixIconColor;
   final bool readOnly;
+  final bool border;
 
 
   const FullTextField({
@@ -19,7 +20,8 @@ class FullTextField extends StatelessWidget {
     this.myController,
     this.prefixIconColor,
     required this.myIcon,
-    required this.readOnly
+    required this.readOnly,
+    required this.border
   });
 
 
@@ -33,7 +35,6 @@ class FullTextField extends StatelessWidget {
       style: TextStyle(
         color: Theme.of(context).colorScheme.secondary
       ),
-
       decoration: InputDecoration(
           labelText: fieldName,
           counterText: "",
@@ -43,16 +44,16 @@ class FullTextField extends StatelessWidget {
           ),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixIcon: Icon(myIcon, color: prefixIconColor ?? Theme.of(context).colorScheme.tertiary),
-          enabledBorder: readOnly ? InputBorder.none : OutlineInputBorder(
+          enabledBorder: border ? OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(
               color: Theme.of(context).colorScheme.secondary,
             ),
-          ),
-          focusedBorder: readOnly ? InputBorder.none : OutlineInputBorder(
+          ) : InputBorder.none,
+          focusedBorder: border ? OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
-          ),
+          ) : InputBorder.none,
           labelStyle: TextStyle(color: Theme.of(context).colorScheme.secondary)),
     );
   }

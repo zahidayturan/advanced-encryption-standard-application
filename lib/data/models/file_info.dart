@@ -3,6 +3,7 @@ class FileInfo {
   String creationTime;
   String type;
   String name;
+  String originalName;
   String keyId;
 
   FileInfo({
@@ -10,6 +11,7 @@ class FileInfo {
     required this.creationTime,
     required this.type,
     required this.name,
+    required this.originalName,
     required this.keyId,
   });
 
@@ -19,6 +21,7 @@ class FileInfo {
       creationTime: json['creationTime'] ?? '',
       type: json['type'] ?? '',
       name: json['name'] ?? '',
+      originalName: json['originalName'] ?? '',
       keyId: json['keyId'] ?? '',
     );
   }
@@ -29,6 +32,7 @@ class FileInfo {
       'creationTime': creationTime,
       'type': type,
       'name': name,
+      'originalName': originalName,
       'keyId': keyId
     };
   }

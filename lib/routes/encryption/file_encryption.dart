@@ -98,45 +98,13 @@ class _FileEncryptionState extends State<FileEncryption> {
             type: fileExtension,
             name: _fileNameController.text.toString(),
             originalName: fileName,
+            size: fileSize!,
             keyId: activeKey!.id!);
 
         await fileOperations.insertFileInfo(newFile, encryptedBytes);
         Navigator.of(context).pop();
         LoadingDialog.hideLoading(context);
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                scrollable: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                contentPadding: const EdgeInsets.all(16),
-                insetPadding: const EdgeInsets.all(16),
-                content: Column(
-                  children: [
-                   RegularText(texts: "Şifreleme Başarılı",color: Theme.of(context).colorScheme.tertiary,weight: FontWeight.bold,),
-                    SizedBox(height: 16,),
-                   Icon(Icons.check_circle_outline_rounded,size: 64,color: Theme.of(context).colorScheme.tertiary),
-                    SizedBox(height: 16,),
-                    InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: BaseContainer(
-                                  color: Theme.of(context).colorScheme.tertiaryContainer,
-                                  child: Center(child: Padding(
-                                    padding: const EdgeInsets.all(6.0),
-                                    child: RegularText(texts: "Tamam",color: colors.grey,size: 14),
-                                  ))),
-                            ),
-                          ],
-                        ))
-                  ],
-                ),
-              );
-            });
+        showSuccessAlert();
       }
 
     }catch (e){
@@ -390,6 +358,43 @@ class _FileEncryptionState extends State<FileEncryption> {
                     },
                   ),
                 ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void showSuccessAlert(){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            scrollable: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            contentPadding: const EdgeInsets.all(16),
+            insetPadding: const EdgeInsets.all(16),
+            content: Column(
+              children: [
+                RegularText(texts: "Şifreleme Başarılı",color: Theme.of(context).colorScheme.tertiary,weight: FontWeight.bold,),
+                const SizedBox(height: 16,),
+                Icon(Icons.check_circle_outline_rounded,size: 64,color: Theme.of(context).colorScheme.tertiary),
+                const SizedBox(height: 16,),
+                InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BaseContainer(
+                              color: Theme.of(context).colorScheme.tertiaryContainer,
+                              child: Center(child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: RegularText(texts: "Tamam",color: colors.grey,size: 14),
+                              ))),
+                        ),
+                      ],
+                    ))
               ],
             ),
           );

@@ -4,6 +4,7 @@ class FileInfo {
   String type;
   String name;
   String originalName;
+  int size;
   String keyId;
 
   FileInfo({
@@ -12,6 +13,7 @@ class FileInfo {
     required this.type,
     required this.name,
     required this.originalName,
+    required this.size,
     required this.keyId,
   });
 
@@ -22,6 +24,7 @@ class FileInfo {
       type: json['type'] ?? '',
       name: json['name'] ?? '',
       originalName: json['originalName'] ?? '',
+      size: json['size'] ?? '',
       keyId: json['keyId'] ?? '',
     );
   }
@@ -33,6 +36,7 @@ class FileInfo {
       'type': type,
       'name': name,
       'originalName': originalName,
+      'size': size,
       'keyId': keyId
     };
   }

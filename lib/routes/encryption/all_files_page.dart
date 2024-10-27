@@ -1,5 +1,5 @@
 import 'package:aes/core/constants/colors.dart';
-import 'package:aes/data/models/file_info.dart';
+import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/base_container.dart';
@@ -35,7 +35,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
               child: Column(
                 children: [
                   EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar"),
-                  FutureBuilder<List<FileInfo>?>(
+                  FutureBuilder<List<KeyFileInfo>?>(
                     future: fileOperations.getAllFileInfo(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -110,7 +110,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
     );
   }
 
-  Widget files(List<FileInfo> list){
+  Widget files(List<KeyFileInfo> list){
     return Column(
       children: [
         ListView.builder(
@@ -130,23 +130,23 @@ class _AllFilesPageState extends State<AllFilesPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: RegularText(texts: item.name,size: 13,family: "FontBold",maxLines: 2)),
-                          SizedBox(width: 8),
+                          Expanded(child: RegularText(texts: item.fileInfo.name,size: 13,family: "FontBold",maxLines: 2)),
+                          const SizedBox(width: 8),
                           RichTextWidget(
-                              texts: ["AES-","${item.keyId}"],
+                              texts: ["AES-",(item.keyInfo.bitLength)],
                               colors: [Theme.of(context).colorScheme.secondary],
                               fontSize: 12,
                               fontFamilies: const ["FontMedium","FontBold"]),
 
                         ]),
-                    const RegularText(texts: "dosya_boyutu",size: 11),
-                    RegularText(texts: item.type,size: 11),
-                    SizedBox(height: 8),
+                    RegularText(texts: "${(item.fileInfo.size / 1024).toStringAsFixed(2)} KB",size: 11),
+                    RegularText(texts: item.fileInfo.type,size: 11),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        RegularText(texts: item.creationTime,size: 12,align: TextAlign.end,),
+                        RegularText(texts: item.fileInfo.creationTime,size: 12,align: TextAlign.end,),
                         BaseContainer(
                             padding: 2,
                             color: Theme.of(context).scaffoldBackgroundColor,

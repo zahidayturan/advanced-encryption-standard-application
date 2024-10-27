@@ -1,3 +1,4 @@
+import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -77,8 +78,9 @@ class FirebaseFirestoreOperation{
     }
   }
 
-  Future<List<FileInfo>?> getAllFileInfo() async {
+  Future<List<KeyFileInfo>?> getAllFileInfo() async {
     try {
+      List<KeyFileInfo> list = [];
       QuerySnapshot fileSnapshot = await _firestore.collection('files').get();
 
       if (fileSnapshot.docs.isNotEmpty) {
@@ -92,7 +94,13 @@ class FirebaseFirestoreOperation{
           return dateB.compareTo(dateA);
         });
 
-        return fileList;
+        for (FileInfo element in fileList) {
+          KeyInfo? key = await getKeyInfo(element.keyId);
+          if (key != null) {
+            list.add(KeyFileInfo(fileInfo: element, keyInfo: key));
+          }
+        }
+        return list;
       } else {
         return [];
       }
@@ -101,6 +109,7 @@ class FirebaseFirestoreOperation{
       return [];
     }
   }
+
 
 
 

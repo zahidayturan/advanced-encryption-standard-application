@@ -40,7 +40,7 @@ class _HomeFilesState extends State<HomeFiles> {
         ),
         const SizedBox(height: 12,),
         FutureBuilder<List<FileInfo>?>(
-          future: fileOperations.getAllFileInfo(),
+          //future: fileOperations.getAllFileInfo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return bodyLoading();

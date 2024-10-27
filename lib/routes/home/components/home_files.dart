@@ -47,9 +47,9 @@ class _HomeFilesState extends State<HomeFiles> {
               }
               return Column(
                 children: [
-                  ownedFiles(snapshot.data!.length),
+                  ownedFiles(2),
                   const SizedBox(height: 12,),
-                  inComingFiles(snapshot.data!.length),
+                  inComingFiles(0),
                 ],
               );
             },)

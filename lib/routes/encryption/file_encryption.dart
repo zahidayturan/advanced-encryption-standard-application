@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
@@ -26,8 +27,6 @@ class _FileEncryptionState extends State<FileEncryption> {
   AppColors colors = AppColors();
   KeyOperations keyOperations = KeyOperations();
   FileOperations fileOperations = FileOperations();
-  String originalFileBytes = "";
-  String encryptedFileBytes = "";
   List<KeyInfo> keyList = [];
   KeyInfo? activeKey;
 
@@ -69,54 +68,53 @@ class _FileEncryptionState extends State<FileEncryption> {
   Future<void> _handleEncryptFile(BuildContext context) async {
     LoadingDialog.showLoading(context, message: "Dosya Şifreleniyor");
 
-    try{
+    try {
       if (widget.filePath != null && activeKey != null) {
         File file = File(widget.filePath!);
-        final fileBytes = file.readAsBytesSync();
-        setState(() {
-          originalFileBytes = base64.encode(fileBytes);
-        });
+        Uint8List fileBytes = file.readAsBytesSync();
+        debugPrint(fileBytes.length.toString());
+        debugPrint(fileBytes.toString());
+
 
         final key = encrypt.Key.fromBase64(activeKey!.key);
         final iv = encrypt.IV.fromLength(16);
-
         final encrypter = encrypt.Encrypter(encrypt.AES(key));
-        final base64String = base64.encode(fileBytes);
+        final encrypted = encrypter.encryptBytes(fileBytes, iv: iv);
+        debugPrint(encrypted.bytes.length.toString());
+        debugPrint(encrypted.bytes.toString());
 
-        final encrypted = encrypter.encrypt(base64String, iv: iv);
-        final encryptedBytes = base64.decode(encrypted.base64);
-
-        setState(() {
-          encryptedFileBytes = encrypted.base64;
-        });
 
         final fileName = path.basename(widget.filePath!);
         final fileExtension = path.extension(widget.filePath!);
 
         FileInfo newFile = FileInfo(
-            creationTime: DateTime.now().toString(),
-            type: fileExtension,
-            name: _fileNameController.text.toString(),
-            originalName: fileName,
-            size: fileSize!,
-            keyId: activeKey!.id!);
+          creationTime: DateTime.now().toString(),
+          type: fileExtension,
+          name: _fileNameController.text.toString(),
+          originalName: fileName,
+          size: fileSize!,
+          keyId: activeKey!.id!,
+          iv: iv.base64,
+        );
 
-        await fileOperations.insertFileInfo(newFile, encryptedBytes);
+        await fileOperations.insertFileInfo(newFile, encrypted.bytes);
         Navigator.of(context).pop();
         LoadingDialog.hideLoading(context);
         showSuccessAlert();
       }
-
-    }catch (e){
+    } catch (e) {
       debugPrint("Bir hata oluştu: $e");
       LoadingDialog.hideLoading(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: RegularText(texts: "Dosya şifrelnirken hata oluştu",color: colors.grey,),backgroundColor: colors.red,behavior: SnackBarBehavior.floating,),
+        SnackBar(
+          content: RegularText(texts: "Dosya şifrelenirken hata oluştu", color: colors.grey),
+          backgroundColor: colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
-
-
   }
+
 
   @override
   Widget build(BuildContext context) {

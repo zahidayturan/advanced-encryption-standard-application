@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/models/file_info.dart';
@@ -10,8 +12,12 @@ import 'package:aes/ui/components/popup_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
 import 'package:aes/ui/components/shimmer_box.dart';
+import 'package:aes/ui/components/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AllFilesPage extends StatefulWidget {
   final String fileType;
@@ -24,6 +30,7 @@ class AllFilesPage extends StatefulWidget {
 class _AllFilesPageState extends State<AllFilesPage> {
   AppColors colors = AppColors();
   FileOperations fileOperations = FileOperations();
+  final _tempKeyController = TextEditingController();
 
 
   @override
@@ -135,7 +142,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: RegularText(texts: item.fileInfo.name,size: 13,family: "FontBold",maxLines: 2)),
+                          Expanded(child: RegularText(texts: item.fileInfo.name != "" ? item.fileInfo.name : "İsimsiz Dosya",size: 13,family: "FontBold",maxLines: 2)),
                           const SizedBox(width: 8),
                           RichTextWidget(
                               texts: ["AES-",(item.keyInfo.bitLength)],
@@ -147,6 +154,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                     RegularText(texts: "${(item.fileInfo.size / 1024).toStringAsFixed(2)} KB",size: 11),
                     RegularText(texts: item.fileInfo.type,size: 11),
                     const SizedBox(height: 8),
+                    RegularText(texts: item.fileInfo.keyId != "tempKey" ? "Çözücü Anahtarı Hazır" : "Anahtarı Kaydedilmemiş",size: 11),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -190,10 +198,11 @@ class _AllFilesPageState extends State<AllFilesPage> {
 
   List<PopupMenuEntry<int>> _popupMenuItems(BuildContext context) {
     return [
-      _buildMenuItem(context, Icons.file_open_outlined, "Dosyanın şifresini çöz", Theme.of(context).colorScheme.secondary, 1),
-      _buildMenuItem(context, Icons.send_outlined, "Dosyayı başkasına gönder", Theme.of(context).colorScheme.secondary, 2),
-      _buildMenuItem(context, Icons.qr_code_2_rounded, "Dosyanın anahtarını paylaş", Theme.of(context).colorScheme.secondary, 3),
-      _buildMenuItem(context, Icons.delete_outline_rounded, "Dosyayı kalıcı olarak sil", colors.red, 4),
+      _buildMenuItem(context, Icons.file_open_outlined, "Dosyayı çöz ve aç", Theme.of(context).colorScheme.secondary, 1),
+      _buildMenuItem(context, Icons.open_in_browser_outlined, "Dosyanın şifresini çöz", Theme.of(context).colorScheme.secondary, 2),
+      _buildMenuItem(context, Icons.send_outlined, "Dosyayı başkasına gönder", Theme.of(context).colorScheme.secondary, 3),
+      _buildMenuItem(context, Icons.qr_code_2_rounded, "Dosyanın anahtarını paylaş", Theme.of(context).colorScheme.secondary, 4),
+      _buildMenuItem(context, Icons.delete_outline_rounded, "Dosyayı kalıcı olarak sil", colors.red, 5),
     ];
   }
 
@@ -214,11 +223,38 @@ class _AllFilesPageState extends State<AllFilesPage> {
 
   Future<void> _handlePopupMenuAction(int? value, KeyFileInfo info) async {
     switch (value) {
-      case 3:
-        showQRGenerator(context,info.keyInfo);
+      case 1:
+        if(info.keyInfo.id != "tempKey"){
+          await _openFile(info);
+        }else{
+          showInputKeyMenu("open",info);
+        }
+        break;
+      case 2:
+        if(info.keyInfo.id != "tempKey"){
+          _showLoading("Bilgiler alınıyor");
+          List<String>? list = await _getFileInfo(info);
+          _hideLoading();
+          showFileByte(info,list!.first,list.last);
+        }else{
+          showInputKeyMenu("info",info);
+        }
         break;
       case 4:
-        _showLoading("Dosya siliniyor",context);
+        if(info.keyInfo.id != "tempKey"){
+          showQRGenerator(context,info.keyInfo);
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: RegularText(texts: "Bu dosyanın anahtarı kayıtlı değil", color: colors.grey),
+              backgroundColor: colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+        break;
+      case 5:
+        _showLoading("Dosya siliniyor");
         await _deleteFile(info.fileInfo);
         _hideLoading();
         setState(() {});
@@ -234,7 +270,49 @@ class _AllFilesPageState extends State<AllFilesPage> {
     }
   }
 
-  void _showLoading(String message,BuildContext context) {
+  Future<void> _openFile(KeyFileInfo info) async {
+    try {
+      if (await Permission.storage.isDenied) {
+        await Permission.storage.request();
+      }
+
+      if (await Permission.manageExternalStorage.isDenied) {
+        await Permission.manageExternalStorage.request();
+      }
+      _showLoading("Dosya çözülüyor");
+
+      List<int>? decrypted = await fileOperations.getDecryptedFile(info.fileInfo, info.keyInfo.key);
+      if (decrypted != null && decrypted.isNotEmpty) {
+        debugPrint(decrypted.length.toString());
+        debugPrint(decrypted.toString());
+        final tempDir = await getTemporaryDirectory();
+        final tempFilePath = '${tempDir.path}/${info.fileInfo.originalName}';
+        File tempFile = File(tempFilePath);
+
+        tempFile.writeAsBytesSync(decrypted);
+        _hideLoading();
+
+        await OpenFile.open(tempFilePath);
+      }
+    } catch (e) {
+      debugPrint("An error occurred: $e");
+    }
+  }
+
+  Future<List<String>?> _getFileInfo(KeyFileInfo info) async {
+    try {
+      List<int>? encrypted = await fileOperations.getEncryptedFile(info.fileInfo);
+      List<int>? decrypted = await fileOperations.getDecryptedFile(info.fileInfo, info.keyInfo.key);
+      String encryptedBase64 = base64Encode(encrypted!.take(1500).toList());
+      String decryptedBase64 = base64Encode(decrypted!.take(1500).toList());
+      return [encryptedBase64, decryptedBase64];
+    } catch (e) {
+      debugPrint("An error occurred: $e");
+      return null;
+    }
+  }
+
+  void _showLoading(String message) {
     LoadingDialog.showLoading(context, message: message);
   }
 
@@ -254,7 +332,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
         return Container(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -318,6 +396,152 @@ class _AllFilesPageState extends State<AllFilesPage> {
     );
   }
 
+  void showFileByte(KeyFileInfo info,String encrypted,String decrypted) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                Container(width: 60,height: 4,decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: const BorderRadius.all(Radius.circular(50))
+                ),),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichTextWidget(
+                        texts: const ["Şifreli ", "dosya (ilk 1500)"],
+                        colors: [Theme.of(context).colorScheme.secondary],
+                        fontFamilies: const ["FontBold", "FontMedium"],
+                        fontSize: 13
+                      ),
+                    ),
+                    Expanded(
+                      child: RichTextWidget(
+                        texts: const ["Çözülmüş ", "dosya (ilk 1500)"],
+                        colors: [Theme.of(context).colorScheme.secondary],
+                        fontFamilies: const ["FontBold", "FontMedium"],
+                        fontSize: 13
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: Text(encrypted,style: const TextStyle(fontSize: 11),)),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(decrypted,style: const TextStyle(fontSize: 11),)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showInputKeyMenu(String returnType,KeyFileInfo info) {
+    showDialog(
+        context: context,
+        barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+        builder: (BuildContext context) {
+          return AlertDialog(
+            scrollable: true,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            contentPadding: const EdgeInsets.all(8),
+            insetPadding: const EdgeInsets.all(12),
+            content: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Text(
+                         "Dosyayı açmak için anahtar sağlayın",
+                       style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.close_rounded),
+                      alignment: Alignment.centerRight,
+                    )
+                  ],
+                ),
+                BaseContainer(
+                    child:
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FullTextField(
+                              myController: _tempKeyController,
+                              fieldName: "Anahtar",
+                              hintText: "Anahtarı giriniz",
+                              myIcon: Icons.key_rounded,
+                              border: false,
+                              readOnly: false),
+                        ),
+                        const SizedBox(width: 8,),
+                        ElevatedButton(
+                          onPressed: () async {
+                            int decodedInputLength = base64Decode(_tempKeyController.text).length;
+                            if(decodedInputLength == 16 ||
+                                decodedInputLength == 24 ||
+                                decodedInputLength == 32){
+                              setState(() {
+                                String userKey = _tempKeyController.text.toString();
+                                info.keyInfo.key = userKey;
+                              });
+                              Navigator.pop(context);
+                              if(returnType == "open"){
+                                _openFile(info);
+                              }else if(returnType == "info"){
+                                _showLoading("Bilgiler alınıyor");
+                                List<String>? list = await _getFileInfo(info);
+                                _hideLoading();
+                                showFileByte(info,list!.first,list.last);
+                              }
+                            }else{
+                              var snackBar = SnackBar(content: Text('Geçersiz Anahtar Uzunluğu',style: TextStyle(color: colors.grey),),backgroundColor: colors.red,);
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            }
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(colors.black),
+                            padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 4)),
+                          ),
+                          child: RegularText(
+                            texts: "Aç", color: colors.grey,
+                          ),
+                        )
+
+                      ],
+                    )),
+                const SizedBox(height: 8,),
+
+              ],
+            ),
+          );
+        });
+  }
+
   Widget bodyLoading(){
     return Column(
       children: [
@@ -328,6 +552,10 @@ class _AllFilesPageState extends State<AllFilesPage> {
         ],),
         const SizedBox(height: 12,),
         const ShimmerBox(height: 96),
+        const SizedBox(height: 12,),
+        const ShimmerBox(height: 96),
+        const SizedBox(height: 12,),
+        const ShimmerBox(height: 96)
       ],
     );
   }

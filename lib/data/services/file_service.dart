@@ -11,4 +11,8 @@ abstract class FileService {
 
   Future<void>deleteFileInfo(FileInfo fileInfo);
 
+  Future<List<int>?>getDecryptedFile(FileInfo fileInfo,String key);
+
+  Future<List<int>?>getEncryptedFile(FileInfo fileInfo);
+
 }

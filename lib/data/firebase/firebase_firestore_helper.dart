@@ -99,6 +99,15 @@ class FirebaseFirestoreOperation{
           if (key != null) {
             list.add(KeyFileInfo(fileInfo: element, keyInfo: key));
           }
+          if(element.keyId == "tempKey"){
+            list.add(KeyFileInfo(fileInfo: element, keyInfo: KeyInfo(
+                id: "tempKey",
+                name: "?",
+                creationTime: "?",
+                bitLength: "?",
+                generateType: "?",
+                key: "?")));
+          }
         }
         return list;
       } else {

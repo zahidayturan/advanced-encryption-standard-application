@@ -39,4 +39,20 @@ class FirebaseStorageOperation{
     }
   }
 
+  Future<Uint8List?> getFileFromFirebase(FileInfo fileInfo) async {
+    try {
+      final storageRef = _firebaseStorage.ref().child("encrypted_files/${fileInfo.id}/${fileInfo.originalName}");
+
+      Uint8List? fileData = await storageRef.getData();
+      if (fileData == null) {
+        debugPrint("Dosya içeriği alınamadı.");
+        return null;
+      }
+      return fileData;
+    } catch (e) {
+      debugPrint("Dosya alma hatası: $e");
+      return null;
+    }
+  }
+
 }

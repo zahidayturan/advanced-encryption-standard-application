@@ -6,6 +6,7 @@ class FileInfo {
   String originalName;
   int size;
   String keyId;
+  String iv;
 
   FileInfo({
     this.id,
@@ -15,6 +16,7 @@ class FileInfo {
     required this.originalName,
     required this.size,
     required this.keyId,
+    required this.iv
   });
 
   factory FileInfo.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class FileInfo {
       originalName: json['originalName'] ?? '',
       size: json['size'] ?? '',
       keyId: json['keyId'] ?? '',
+      iv: json['iv'] ?? '',
     );
   }
 
@@ -37,7 +40,8 @@ class FileInfo {
       'name': name,
       'originalName': originalName,
       'size': size,
-      'keyId': keyId
+      'keyId': keyId,
+      'iv': iv
     };
   }
 }

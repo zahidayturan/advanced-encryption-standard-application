@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeReadPage extends StatefulWidget {
-  const QRCodeReadPage({super.key});
+  final String type;
+  const QRCodeReadPage({super.key,required this.type});
 
   @override
   State<QRCodeReadPage> createState() => _QRCodeReadPageState();
@@ -32,7 +33,7 @@ class _QRCodeReadPageState extends State<QRCodeReadPage> {
       appBar: AppBar(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           iconTheme: IconThemeData(color: Theme.of(context).colorScheme.secondary),
-          title: const RegularText(texts: "QR Kod Okuyucu",size: 17)),
+          title: RegularText(texts: widget.type == "qr" ? "QR Kod Okuyucu" : "Barkod Okuyucu",size: 17)),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -49,7 +50,7 @@ class _QRCodeReadPageState extends State<QRCodeReadPage> {
               child: Center(
                 child: (result != null)
                     ? RegularText(texts:'Kod Okundu, Bekleyiniz',color: colors.grey,)
-                    : const RegularText(texts: 'QR Kodu Okutunuz'),
+                    : RegularText(texts: widget.type == "qr" ? 'QR Kodu Okutunuz' : "Barkodu Okutunuz"),
               ),
             ),
           )
@@ -78,7 +79,7 @@ class _QRCodeReadPageState extends State<QRCodeReadPage> {
         Navigator.pop(context);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: scanData.code!,type: "qr",)),
+          MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: scanData.code!,type:widget.type)),
         );
       }
     });

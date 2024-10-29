@@ -1,5 +1,4 @@
 import 'package:aes/core/constants/colors.dart';
-import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/routes/encryption/all_files_page.dart';
 import 'package:aes/ui/components/base_container.dart';

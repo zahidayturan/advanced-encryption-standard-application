@@ -84,15 +84,15 @@ class _GenerateKeyState extends State<GenerateKey> {
     return keyBase64;
   }
 
-  Future<List<int>> readAudioFile(String path) async {
-    File audioFile = File(path);
-    List<int> audioBytes = await audioFile.readAsBytes();
-    debugPrint(audioBytes.toString());
-    return audioBytes;
+  Future<List<int>> readMediaFile(String path) async {
+    File mediaFile = File(path);
+    List<int> mediaBytes = await mediaFile.readAsBytes();
+    debugPrint(mediaBytes.toString());
+    return mediaBytes;
   }
 
   Future<String> generateKeyFromAudio(String path, int bitLength) async {
-    List<int> audioBytes = await readAudioFile(path);
+    List<int> audioBytes = await readMediaFile(path);
     int targetLength = bitLength ~/ 8;
     if (audioBytes.length > targetLength) {
       audioBytes = audioBytes.sublist(0, targetLength);
@@ -106,12 +106,29 @@ class _GenerateKeyState extends State<GenerateKey> {
     return keyBase64;
   }
 
+  Future<String> generateKeyFromImage(String path, int bitLength) async {
+    List<int> imageBytes = await readMediaFile(path);
+    int targetLength = bitLength ~/ 8;
+    if (imageBytes.length > targetLength) {
+      imageBytes = imageBytes.sublist(0, targetLength);
+    }
+    if (imageBytes.length < targetLength) {
+      int paddingLength = targetLength - imageBytes.length;
+      imageBytes = List.from(imageBytes)..addAll(List.generate(paddingLength, (_) => 0));
+    }
+    final key = encrypt.Key.fromBase64(base64.encode(imageBytes));
+    String keyBase64 = base64.encode(key.bytes);
+    return keyBase64;
+  }
+
   Future<void> _handleAdKey(BuildContext context) async {
     LoadingDialog.showLoading(context, message: "Anahtar Üretiliyor");
 
     try {
-      if (widget.type == "qr") {
+      if (widget.type == "qr" || widget.type == "barcode") {
         generatedKey = generatePaddedKey(widget.codeOrPath, bitLength);
+      } else if (widget.type == "image") {
+        generatedKey = await generateKeyFromImage(widget.codeOrPath, bitLength);
       } else if (widget.type == "voice") {
         generatedKey = await generateKeyFromAudio(widget.codeOrPath, bitLength);
       } else {
@@ -234,6 +251,17 @@ class _GenerateKeyState extends State<GenerateKey> {
     );
   }
 
+  String getTypeName(String shortName){
+    if(shortName == "qr"){
+      return "QR Kod ile";
+    }else if(shortName == "barcode"){
+      return "Barkod ile";
+    }else if(shortName == "image"){
+      return "Görüntü ile";
+    }else{
+      return "Ses ile";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +297,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                 const SizedBox(height: 24),
                 FullTextField(
                     fieldName: "Anahtar Üretim Türü",
-                    hintText: widget.type == "qr" ? "QR Kod ile" : "Ses ile",
+                    hintText: getTypeName(widget.type),
                     readOnly: true,
                     border: false,
                     myIcon: Icons.merge_type_rounded),

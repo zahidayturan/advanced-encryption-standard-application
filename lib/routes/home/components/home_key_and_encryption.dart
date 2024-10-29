@@ -4,6 +4,7 @@ import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/all_keys_page.dart';
 import 'package:aes/routes/encryption/file_encryption.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
+import 'package:aes/routes/encryption/qr_reader.dart';
 import 'package:aes/routes/encryption/voice_recorder.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
@@ -61,6 +62,22 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
       print("Dosya seçilmedi.");
     }
   }
+
+  Future<String?> pickFilePath() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      if (file.path != null) {
+        return file.path;
+      } else {
+        print("Dosya yolu bulunamadı.");
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -334,57 +351,99 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: Container(width: 60,height: 4,decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: const BorderRadius.all(Radius.circular(50))
-                ),),
-              ),
-              const SizedBox(height: 24),
-              RichTextWidget(
-                  texts: const ["Anahtar ","Üretim Yöntemleri"],
-                  colors: [Theme.of(context).colorScheme.secondary],
-                  fontFamilies: const ["FontMedium","FontBold"],
-                  fontSize: 16,
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: Icon(Icons.qr_code_2_rounded,color: Theme.of(context).colorScheme.secondary,),
-                title: const RegularText(texts: "QR Kod İle Üret", size: 15,),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
-                    //MaterialPageRoute(builder: (context) => QRCodeReadPage()),
-                  );
-                  if (result == 'updated') {
-                    setState(() {
-                      print("set geldi");
-                    });
-                  }
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.mic_rounded,color: Theme.of(context).colorScheme.secondary,),
-                title: const RegularText(texts: "Ses İle Üret", size: 15,),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const VoiceProductionPage()),
-                  );
-                  if (result == 'updated') {
-                    setState(() {});
-                  }
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(width: 60,height: 4,decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: const BorderRadius.all(Radius.circular(50))
+                  ),),
+                ),
+                const SizedBox(height: 24),
+                RichTextWidget(
+                    texts: const ["Anahtar ","Üretim Yöntemleri"],
+                    colors: [Theme.of(context).colorScheme.secondary],
+                    fontFamilies: const ["FontMedium","FontBold"],
+                    fontSize: 16,
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(Icons.qr_code_2_rounded,color: Theme.of(context).colorScheme.secondary,),
+                  title: const RegularText(texts: "QR Kod İle Üret", size: 15,),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
+                      //MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "qr")),
+                    );
+                    if (result == 'updated') {
+                      setState(() {
+                        print("set geldi");
+                      });
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.qr_code_scanner_rounded,color: Theme.of(context).colorScheme.secondary,),
+                  title: const RegularText(texts: "Barkod İle Üret", size: 15,),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "barcode")),
+                    );
+                    if (result == 'updated') {
+                      setState(() {
+                        print("set geldi");
+                      });
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.image_outlined,color: Theme.of(context).colorScheme.secondary,),
+                  title: const RegularText(texts: "Görüntü İle Üret", size: 15,),
+                  onTap: () async {
+                    String? imagePath = await pickFilePath();
+                    print(imagePath);
+                    if(imagePath != null){
+                      Navigator.pop(context);
+                      final result = Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: imagePath,type:"image")),
+                      );
+                      if (result == 'updated') {
+                        setState(() {});
+                      }
+                    }else{
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: RegularText(texts: "Görüntü dosyası seçilirken bir hata oluştu",color: colors.grey,),backgroundColor: colors.red,behavior: SnackBarBehavior.floating,),
+                      );
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.mic_none_rounded,color: Theme.of(context).colorScheme.secondary,),
+                  title: const RegularText(texts: "Ses İle Üret", size: 15,),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const VoiceProductionPage()),
+                    );
+                    if (result == 'updated') {
+                      setState(() {});
+                    }
 
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },

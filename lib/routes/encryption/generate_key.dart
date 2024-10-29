@@ -33,7 +33,6 @@ class _GenerateKeyState extends State<GenerateKey> {
   final _nameController = TextEditingController(text: "Anahtarım");
   bool checkedValue = true;
 
-
   @override
   void initState() {
     super.initState();
@@ -130,7 +129,7 @@ class _GenerateKeyState extends State<GenerateKey> {
       if(checkedValue){
         await keyOperations.insertKeyInfo(newKey);
       }
-      Navigator.of(context).pop();
+      Navigator.pop(context,'updated');
       LoadingDialog.hideLoading(context).then((value) => showKeyDetails(context,newKey));
     } catch (e) {
       debugPrint("Bir hata oluştu: $e");
@@ -141,8 +140,8 @@ class _GenerateKeyState extends State<GenerateKey> {
     }
   }
 
-  void showKeyDetails(BuildContext context, KeyInfo keyInfo) {
-    showModalBottomSheet(
+  void showKeyDetails(BuildContext context, KeyInfo keyInfo) async {
+    await showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
@@ -159,12 +158,21 @@ class _GenerateKeyState extends State<GenerateKey> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(width: 60,height: 4,decoration: BoxDecoration(
+                Container(
+                  width: 60,
+                  height: 4,
+                  decoration: BoxDecoration(
                     color: colors.green,
-                    borderRadius: const BorderRadius.all(Radius.circular(50))
-                ),),
+                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                RegularText(texts: "Anahtar üretildi", size: 16, weight: FontWeight.bold,color: colors.green,),
+                RegularText(
+                  texts: "Anahtar üretildi",
+                  size: 16,
+                  weight: FontWeight.bold,
+                  color: colors.green,
+                ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -183,7 +191,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: keyInfo.key));
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: RegularText(texts: 'Anahtar panoya kopyalandı',color: colors.grey,),
+                          content: RegularText(texts: 'Anahtar panoya kopyalandı', color: colors.grey),
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(0),
@@ -192,8 +200,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                           margin: EdgeInsets.only(
                               bottom: MediaQuery.of(context).size.height - 100),
                         ));
-
-                        },
+                      },
                     ),
                   ],
                 ),
@@ -209,7 +216,8 @@ class _GenerateKeyState extends State<GenerateKey> {
                   data: keyInfo.key,
                   version: QrVersions.auto,
                   size: 150.0,
-                  backgroundColor: colors.grey,),
+                  backgroundColor: colors.grey,
+                ),
                 const SizedBox(height: 8),
                 const RegularText(
                   texts: "Üretilen anahtarı paylaşmak isterseniz, diğer cihazda QR ile anahtar al menüsünde bu kodu okutunuz.",
@@ -226,6 +234,7 @@ class _GenerateKeyState extends State<GenerateKey> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -241,6 +250,7 @@ class _GenerateKeyState extends State<GenerateKey> {
               children: [
                 const EPageAppBar(
                   texts: "Anahtar Üretimi",
+                  dataChanged: false,
                 ),
                 const SizedBox(height: 12),
                 const FullTextField(

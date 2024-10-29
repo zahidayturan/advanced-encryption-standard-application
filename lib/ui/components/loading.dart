@@ -40,6 +40,7 @@ class LoadingDialog {
   }
 
   static Future<void> hideLoading(BuildContext context) async {
-    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.pop(context,'updated');
+    //Navigator.of(context, rootNavigator: true).pop();
   }
 }

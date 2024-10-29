@@ -21,48 +21,54 @@ class AllKeysPage extends StatefulWidget {
 class _AllKeysPageState extends State<AllKeysPage> {
   AppColors colors = AppColors();
   KeyOperations keyOperations = KeyOperations();
+  bool dataChanged = false;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.only(right: 12, left: 12, top: 6),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Center(
-              child: Column(
-                children: [
-                  const EPageAppBar(texts: "Üretilen Anahtarlar"),
-                  FutureBuilder<List<KeyInfo>?>(
-                    future: keyOperations.getAllKeyInfo(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return loadingContainer();
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 18),
-                            child: RegularText(texts: "Hata ile karşışaşıldı",size: 15),
-                          ),
-                        );
-                      }
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 18),
-                            child: RegularText(texts: "Anahtar bulunamadı",size: 15),
-                          ),
-                        );
-                      }
-                      return keyContainer(snapshot.data!);
-                    },
-                  ),
-
-                ],
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, dataChanged ? 'updated' : '');
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          resizeToAvoidBottomInset: false,
+          body: Padding(
+            padding: const EdgeInsets.only(right: 12, left: 12, top: 6),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Center(
+                child: Column(
+                  children: [
+                    EPageAppBar(texts: "Üretilen Anahtarlar",dataChanged: dataChanged,),
+                    FutureBuilder<List<KeyInfo>?>(
+                      future: keyOperations.getAllKeyInfo(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return loadingContainer();
+                        }
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 18),
+                              child: RegularText(texts: "Hata ile karşışaşıldı",size: 15),
+                            ),
+                          );
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 18),
+                              child: RegularText(texts: "Anahtar bulunamadı",size: 15),
+                            ),
+                          );
+                        }
+                        return keyContainer(snapshot.data!);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -123,7 +129,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                     RegularText(
                       texts: item.generateType,
                     ),
-                    SizedBox(height: 8,),
+                    const SizedBox(height: 8,),
                     Text(
                       item.key,
                       style: TextStyle(
@@ -199,6 +205,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
   Future<void> _deleteKey(KeyInfo keyInfo) async {
     try {
       await KeyOperations().deleteKeyInfo(keyInfo.id!);
+      dataChanged = true;
     } catch (e) {
       debugPrint("An error occurred: $e");
     }
@@ -224,7 +231,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
         return Container(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

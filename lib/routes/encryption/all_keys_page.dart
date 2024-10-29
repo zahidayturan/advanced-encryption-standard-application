@@ -254,7 +254,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                 ),
                 const SizedBox(height: 16),
                 RegularText(
-                  texts: "Dosyaları sırala",
+                  texts: "Anahtarları sırala",
                   size: 16,
                   weight: FontWeight.bold,
                   color: colors.green,

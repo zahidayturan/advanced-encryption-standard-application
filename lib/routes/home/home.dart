@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
             child: Center(
               child: Column(
                 children: [
-                  SizedBox(height: 18,),
+                  SizedBox(height: 12,),
                   HomeTopBar(),
                   SizedBox(height: 28,),
                   HomeKeyAndEncryption(),

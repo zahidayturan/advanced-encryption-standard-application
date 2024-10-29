@@ -15,4 +15,6 @@ abstract class FileService {
 
   Future<List<int>?>getEncryptedFile(FileInfo fileInfo);
 
+  Future<List<int>>getFileCountForInfo();
+
 }

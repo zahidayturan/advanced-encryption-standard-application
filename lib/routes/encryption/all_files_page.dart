@@ -31,41 +31,47 @@ class _AllFilesPageState extends State<AllFilesPage> {
   AppColors colors = AppColors();
   FileOperations fileOperations = FileOperations();
   final _tempKeyController = TextEditingController();
-
+  bool dataChanged = false;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.only(right: 12, left: 12, top: 6),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Center(
-              child: Column(
-                children: [
-                  EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar", dataChanged: false,),
-                  FutureBuilder<List<KeyFileInfo>?>(
-                    future: fileOperations.getAllFileInfo(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return bodyLoading();
-                      }
-                      return Column(
-                        children: [
-                          Row(children: [
-                            swapButton(snapshot.data!.isNotEmpty),
-                            const SizedBox(width: 12,),
-                            Expanded(child: searchBar(snapshot.data!.isNotEmpty))
-                          ],),
-                          const SizedBox(height: 12,),
-                          files(snapshot.data!)
-                        ],
-                      );
-                    },)
-                ],
+      child: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, dataChanged ? 'updated' : '');
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          resizeToAvoidBottomInset: false,
+          body: Padding(
+            padding: const EdgeInsets.only(right: 12, left: 12, top: 6),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Center(
+                child: Column(
+                  children: [
+                    EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar", dataChanged: dataChanged),
+                    FutureBuilder<List<KeyFileInfo>?>(
+                      future: fileOperations.getAllFileInfo(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return bodyLoading();
+                        }
+                        return Column(
+                          children: [
+                            Row(children: [
+                              swapButton(snapshot.data!.isNotEmpty),
+                              const SizedBox(width: 12,),
+                              Expanded(child: searchBar(snapshot.data!.isNotEmpty))
+                            ],),
+                            const SizedBox(height: 12,),
+                            files(snapshot.data!)
+                          ],
+                        );
+                      },)
+                  ],
+                ),
               ),
             ),
           ),
@@ -265,6 +271,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
   Future<void> _deleteFile(FileInfo fileInfo) async {
     try {
       await FileOperations().deleteFileInfo(fileInfo);
+      dataChanged = true;
     } catch (e) {
       debugPrint("An error occurred: $e");
     }

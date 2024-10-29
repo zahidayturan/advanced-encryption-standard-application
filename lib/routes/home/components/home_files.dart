@@ -39,17 +39,17 @@ class _HomeFilesState extends State<HomeFiles> {
           ],
         ),
         const SizedBox(height: 12,),
-        FutureBuilder<List<FileInfo>?>(
-          //future: fileOperations.getAllFileInfo(),
+        FutureBuilder<List<int>>(
+          future: fileOperations.getFileCountForInfo(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return bodyLoading();
               }
               return Column(
                 children: [
-                  ownedFiles(2),
+                  ownedFiles(snapshot.data![0]),
                   const SizedBox(height: 12,),
-                  inComingFiles(0),
+                  inComingFiles(snapshot.data![1]),
                 ],
               );
             },)
@@ -69,11 +69,16 @@ class _HomeFilesState extends State<HomeFiles> {
               child: Image.asset("assets/icons/ownedFiles.png",height: 72,color: Theme.of(context).scaffoldBackgroundColor),
             ),
             onTapWidget(
-                onTap: (){
-                  Navigator.push(
+                onTap: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const AllFilesPage(fileType: "owned",)),
                   );
+                  if (result == 'updated') {
+                    setState(() {
+                    });
+                  }
+
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(10),
@@ -100,7 +105,7 @@ class _HomeFilesState extends State<HomeFiles> {
                       ),
                       Align(
                           alignment: Alignment.bottomRight,
-                          child: RegularText(texts: ownedFilesCount == 0 ? "Henüz dosya yüklemediniz" : "Yüklenen dosya sayısı $ownedFilesCount",size: 11,align: TextAlign.end,))
+                          child: RegularText(texts: ownedFilesCount == 0 ? "Yüklenen dosyaları görüntüleyin" : "Yüklenen dosya sayısı $ownedFilesCount",size: 11,align: TextAlign.end,))
                     ],
                   ),
                 )
@@ -121,11 +126,16 @@ class _HomeFilesState extends State<HomeFiles> {
               child: Image.asset("assets/icons/inComingFiles.png",height: 72,color: Theme.of(context).scaffoldBackgroundColor),
             ),
             onTapWidget(
-                onTap: (){
-                  Navigator.push(
+                onTap: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const AllFilesPage(fileType: "inComing",)),
                   );
+                  if (result == 'updated') {
+                    setState(() {
+                    });
+                  }
+
                 },
                 child:  Padding(
                   padding: const EdgeInsets.all(10),
@@ -152,7 +162,7 @@ class _HomeFilesState extends State<HomeFiles> {
                                 fontFamilies: const ["FontMedium","FontBold"]),
                           ],
                         ),
-                        RegularText(texts: inComingFilesCount == 0 ? "Henüz dosya gelmedi" : "Gelen dosya sayısı $inComingFilesCount",size: 11,align: TextAlign.end,)
+                        RegularText(texts: inComingFilesCount == 0 ? "Gelen dosyaları görüntüleyin" : "Gelen dosya sayısı $inComingFilesCount",size: 11,align: TextAlign.end,)
                       ],
                     ),
                   ),

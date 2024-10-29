@@ -50,4 +50,10 @@ class FileOperations implements FileService {
     return encryptedBytes;
   }
 
+  @override
+  Future<List<int>>getFileCountForInfo() async {
+    List<int> dataList = await FirebaseFirestoreOperation().getFileCountForInfo();
+    return dataList;
+  }
+
 }

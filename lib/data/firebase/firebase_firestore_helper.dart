@@ -127,7 +127,9 @@ class FirebaseFirestoreOperation{
     }
   }
 
-
-
-
+  Future<List<int>> getFileCountForInfo() async {
+    QuerySnapshot userFiles = await _firestore.collection('files').get();
+    int fileCount = userFiles.docs.length;
+    return [fileCount, 0];
+  }
 }

@@ -177,7 +177,6 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               );
               if (result == 'updated') {
                 setState(() {
-                  print("anahtar üretimi dönen $result");
                 });
               }
             },

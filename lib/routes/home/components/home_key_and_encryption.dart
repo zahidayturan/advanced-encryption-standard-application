@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
@@ -50,30 +52,50 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     }
   }
 
-  Future<void> pickAndEncryptFile() async {
+  Future<void> pickAndEncryptFile(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
+
+    if (result != null && result.files.isNotEmpty) {
       PlatformFile file = result.files.first;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => FileEncryption(filePath: file.path)),
-      );
+      if (file.path != null) {
+        final fileSize = File(file.path!).lengthSync();
+        const maxSizeInBytes = 20 * 1024 * 1024; // 20 MB
+
+        if (fileSize > maxSizeInBytes) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Seçtiğiniz dosya 20 MB'dan büyük. Lütfen daha küçük bir dosya seçin."),
+            ),
+          );
+          return;
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FileEncryption(filePath: file.path)),
+        );
+      } else {
+        debugPrint("Dosya yolu bulunamadı.");
+      }
     } else {
-      print("Dosya seçilmedi.");
+      debugPrint("Dosya seçilmedi.");
     }
   }
 
-  Future<String?> pickFilePath() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
+  Future<String?> pickImagePath() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null && result.files.isNotEmpty) {
       PlatformFile file = result.files.first;
       if (file.path != null) {
         return file.path;
       } else {
-        print("Dosya yolu bulunamadı.");
+        debugPrint("Dosya yolu bulunamadı.");
         return null;
       }
     } else {
+      debugPrint("Dosya seçilmedi.");
       return null;
     }
   }
@@ -288,7 +310,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           ),
           GestureDetector(
             onTap: () {
-              pickAndEncryptFile();
+              pickAndEncryptFile(context);
             },
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -352,7 +374,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         return Container(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -382,9 +404,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                       //MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "qr")),
                     );
                     if (result == 'updated') {
-                      setState(() {
-                        print("set geldi");
-                      });
+                      setState(() {});
                     }
                   },
                 ),
@@ -395,12 +415,10 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                     Navigator.pop(context);
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "barcode")),
+                      MaterialPageRoute(builder: (context) => const QRCodeReadPage(type: "barcode")),
                     );
                     if (result == 'updated') {
-                      setState(() {
-                        print("set geldi");
-                      });
+                      setState(() {});
                     }
                   },
                 ),
@@ -408,13 +426,13 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                   leading: Icon(Icons.image_outlined,color: Theme.of(context).colorScheme.secondary,),
                   title: const RegularText(texts: "Görüntü İle Üret", size: 15,),
                   onTap: () async {
-                    String? imagePath = await pickFilePath();
-                    print(imagePath);
-                    if(imagePath != null){
+                    String? imagePath = await pickImagePath();
+                    debugPrint(imagePath);
+                    if (imagePath != null) {
                       Navigator.pop(context);
-                      final result = Navigator.push(
+                      final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: imagePath,type:"image")),
+                        MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: imagePath, type: "image")),
                       );
                       if (result == 'updated') {
                         setState(() {});

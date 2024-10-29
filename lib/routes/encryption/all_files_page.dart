@@ -7,6 +7,7 @@ import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/base_container.dart';
+import 'package:aes/ui/components/date_format.dart';
 import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/popup_menu.dart';
 import 'package:aes/ui/components/regular_text.dart';
@@ -27,11 +28,40 @@ class AllFilesPage extends StatefulWidget {
   State<AllFilesPage> createState() => _AllFilesPageState();
 }
 
+enum SortOrder { newest, oldest, largest, smallest }
+
 class _AllFilesPageState extends State<AllFilesPage> {
   AppColors colors = AppColors();
   FileOperations fileOperations = FileOperations();
   final _tempKeyController = TextEditingController();
   bool dataChanged = false;
+
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = "";
+  SortOrder sortOrder = SortOrder.newest;
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  List<KeyFileInfo> filterFiles(List<KeyFileInfo> files, String query) {
+    if (query.isNotEmpty) {
+      files = files.where((file) => file.fileInfo.name.contains(query)).toList();
+    }
+    if (sortOrder == SortOrder.newest) {
+      files.sort((a, b) => b.fileInfo.creationTime.compareTo(a.fileInfo.creationTime));
+    } else if(sortOrder == SortOrder.oldest) {
+      files.sort((a, b) => a.fileInfo.creationTime.compareTo(b.fileInfo.creationTime));
+    }else if(sortOrder == SortOrder.largest){
+      files.sort((a, b) => b.fileInfo.size.compareTo(a.fileInfo.size));
+    }else {
+      files.sort((a, b) => a.fileInfo.size.compareTo(b.fileInfo.size));
+    }
+    return files;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +88,30 @@ class _AllFilesPageState extends State<AllFilesPage> {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return bodyLoading();
                         }
+                        List<KeyFileInfo> filteredFiles = filterFiles(snapshot.data ?? [], searchQuery);
                         return Column(
                           children: [
-                            Row(children: [
-                              swapButton(snapshot.data!.isNotEmpty),
-                              const SizedBox(width: 12,),
-                              Expanded(child: searchBar(snapshot.data!.isNotEmpty))
-                            ],),
-                            const SizedBox(height: 12,),
-                            files(snapshot.data!)
+                            SizedBox(
+                              height: 20,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: RegularText(texts: "${filteredFiles.length} dosya bulundu",size: 12,),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                swapButton(filteredFiles.isNotEmpty),
+                                const SizedBox(width: 12),
+                                Expanded(child: searchBar(snapshot.data!.isNotEmpty)),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            files(filteredFiles),
                           ],
                         );
-                      },)
+                      },
+                    )
                   ],
                 ),
               ),
@@ -81,14 +123,105 @@ class _AllFilesPageState extends State<AllFilesPage> {
   }
 
 
-  Widget swapButton(bool isActive){
-    return BaseContainer(
-      height: 32,
-      padding: 8,
-      radius: 50,
-      child: Image.asset("assets/icons/sort.png",color: isActive ? Theme.of(context).colorScheme.onTertiary : colors.greyMid,height: 22),
+  Widget swapButton(bool isActive) {
+    return InkWell(
+      onTap: () {
+        if(isActive){
+          _showSortMenu();
+        }
+      },
+      child: BaseContainer(
+        height: 32,
+        padding: 9,
+        radius: 50,
+        child: Image.asset(
+          "assets/icons/sort.png",
+          color: isActive ? Theme.of(context).colorScheme.secondary : colors.greyMid,
+          height: 20,
+        ),
+      ),
     );
   }
+
+  void _showSortMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 60,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colors.green,
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                RegularText(
+                  texts: "Dosyaları sırala",
+                  size: 16,
+                  weight: FontWeight.bold,
+                  color: colors.green,
+                ),
+                const SizedBox(height: 8),
+                ListTile(
+                  title: const RegularText(texts: "Tarihine göre yeniden eskiye sırala",size: 14,),
+                  onTap: () {
+                    setState(() {
+                      sortOrder = SortOrder.newest;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const RegularText(texts: "Tarihine göre eskiden yeniye sırala",size: 14,),
+                  onTap: () {
+                    setState(() {
+                      sortOrder = SortOrder.oldest;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const RegularText(texts: "Boyutuna göre büyükten küçüğe sırala",size: 14,),
+                  onTap: () {
+                    setState(() {
+                      sortOrder = SortOrder.largest;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const RegularText(texts: "Boyutune göre küçükten büyüğe sırala",size: 14,),
+                  onTap: () {
+                    setState(() {
+                      sortOrder = SortOrder.smallest;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 
   Widget searchBar(bool isActive){
     return BaseContainer(
@@ -98,8 +231,13 @@ class _AllFilesPageState extends State<AllFilesPage> {
         child: Padding(
           padding: const EdgeInsets.only(left: 10),
           child: TextFormField(
+            controller: searchController,
             enabled: isActive,
-            onTap: () {},
+            onEditingComplete: () {
+              setState(() {
+                searchQuery = searchController.text;
+              });
+            },
             style: TextStyle(
                 fontSize: 12,
                 color: Theme.of(context).colorScheme.secondary
@@ -117,9 +255,11 @@ class _AllFilesPageState extends State<AllFilesPage> {
               suffixIcon: IconButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
-
+                    setState(() {
+                      searchQuery = searchController.text;
+                    });
                   },
-                  icon: Image.asset("assets/icons/search.png",height: 22,color: isActive ? Theme.of(context).colorScheme.onTertiary : colors.greyMid,
+                  icon: Image.asset("assets/icons/search.png",height: 22,color: isActive ? Theme.of(context).colorScheme.secondary : colors.greyMid,
                   )
               ),
             ),
@@ -165,7 +305,17 @@ class _AllFilesPageState extends State<AllFilesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        RegularText(texts: item.fileInfo.creationTime,size: 12,align: TextAlign.end,),
+                        Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(right: 4),
+                              child: RegularText(texts: "Şifrelendi",style: FontStyle.italic,size: 11,family: "FontLight",),
+                            ),
+                            RegularText(
+                                texts: formatDateTime(item.fileInfo.creationTime),size: 12
+                            ),
+                          ],
+                        ),
                         InkWell(
                           onTapDown: (TapDownDetails details) => _showMoreMenu(details, colors.blueMid, context, item),
                           child: BaseContainer(
@@ -204,7 +354,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
 
   List<PopupMenuEntry<int>> _popupMenuItems(BuildContext context) {
     return [
-      _buildMenuItem(context, Icons.file_open_outlined, "Dosyayı çöz ve aç", Theme.of(context).colorScheme.secondary, 1),
+      _buildMenuItem(context, Icons.file_open_outlined, "Dosyayı çöz ve aç", colors.blueMid, 1),
       _buildMenuItem(context, Icons.open_in_browser_outlined, "Dosyanın şifresini çöz", Theme.of(context).colorScheme.secondary, 2),
       _buildMenuItem(context, Icons.send_outlined, "Dosyayı başkasına gönder", Theme.of(context).colorScheme.secondary, 3),
       _buildMenuItem(context, Icons.qr_code_2_rounded, "Dosyanın anahtarını paylaş", Theme.of(context).colorScheme.secondary, 4),
@@ -382,7 +532,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                       align: TextAlign.center,
                     ),
                     RegularText(
-                      texts: keyInfo.creationTime,
+                      texts: formatDateTime(keyInfo.creationTime),
                       size: 10,
                       align: TextAlign.center,
                     ),
@@ -552,10 +702,14 @@ class _AllFilesPageState extends State<AllFilesPage> {
   Widget bodyLoading(){
     return Column(
       children: [
+        const Align(
+            alignment: Alignment.centerRight,
+            child: ShimmerBox(height: 20,width: 120)),
+        const SizedBox(height: 12),
         Row(children: [
           ShimmerBox(height: 32,width:32, borderRadius: BorderRadius.circular(50)),
           const SizedBox(width: 12,),
-          ShimmerBox(height: 32,borderRadius: BorderRadius.circular(50),)
+          Expanded(child: ShimmerBox(height: 32,borderRadius: BorderRadius.circular(50),))
         ],),
         const SizedBox(height: 12,),
         const ShimmerBox(height: 96),

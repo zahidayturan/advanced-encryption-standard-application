@@ -1,28 +1,38 @@
+import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
+final localStorage = GetLocalStorage();
 
 class FirebaseFirestoreOperation{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-
   Future<void> addKeyInfoToFirestore(KeyInfo keyInfo) async {
     try {
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
       if (keyInfo.id == null || keyInfo.id!.isEmpty) {
-        keyInfo.id = _firestore.collection('keys').doc().id;
+        keyInfo.id = _firestore.collection('users').doc(uuid).collection('keys').doc().id;
       }
       Map<String, dynamic> keyData = keyInfo.toJson();
-      await _firestore.collection('keys').doc(keyInfo.id).set(keyData);
+      await _firestore.collection('users').doc(uuid).collection('keys').doc(keyInfo.id).set(keyData);
     } catch (e) {
-      print('Add Key Error: $e');
+      debugPrint('Add Key Error: $e');
     }
   }
 
   Future<KeyInfo?> getKeyInfo(String uid) async {
     try {
-      DocumentSnapshot keySnapshot = await _firestore.collection('keys').doc(uid).get();
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
+      DocumentSnapshot keySnapshot = await _firestore.collection('users').doc(uuid).collection('keys').doc(uid).get();
 
       if (keySnapshot.exists) {
         Map<String, dynamic>? keyData = keySnapshot.data() as Map<String, dynamic>?;
@@ -31,14 +41,18 @@ class FirebaseFirestoreOperation{
         return null;
       }
     } catch (e) {
-      print('Error fetching key data: $e');
+      debugPrint('Error fetching key data: $e');
       return null;
     }
   }
 
   Future<List<KeyInfo>?> getAllKeyInfo() async {
     try {
-      QuerySnapshot keySnapshot = await _firestore.collection('keys').get();
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
+      QuerySnapshot keySnapshot = await _firestore.collection('users').doc(uuid).collection('keys').get();
 
       if (keySnapshot.docs.isNotEmpty) {
         List<KeyInfo> keyList = keySnapshot.docs
@@ -56,32 +70,44 @@ class FirebaseFirestoreOperation{
         return [];
       }
     } catch (e) {
-      print('Error fetching all key info: $e');
+      debugPrint('Error fetching all key info: $e');
       return [];
     }
   }
 
   Future<void> deleteKeyInfo(String keyId) async {
     try {
-      await _firestore.collection('keys').doc(keyId).delete();
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
+      await _firestore.collection('users').doc(uuid).collection('keys').doc(keyId).delete();
     } catch (e) {
-      print('Error deleting key: $e');
+      debugPrint('Error deleting key: $e');
     }
   }
 
   Future<void> addFileInfoToFirestore(FileInfo fileInfo) async {
     try {
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
       Map<String, dynamic> fileData = fileInfo.toJson();
-      await _firestore.collection('files').doc(fileInfo.id).set(fileData);
+      await _firestore.collection('users').doc(uuid).collection('files').doc(fileInfo.id).set(fileData);
     } catch (e) {
-      print('Add Key Error: $e');
+      debugPrint('Add Key Error: $e');
     }
   }
 
   Future<List<KeyFileInfo>?> getAllFileInfo() async {
     try {
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
       List<KeyFileInfo> list = [];
-      QuerySnapshot fileSnapshot = await _firestore.collection('files').get();
+      QuerySnapshot fileSnapshot = await _firestore.collection('users').doc(uuid).collection('files').get();
 
       if (fileSnapshot.docs.isNotEmpty) {
         List<FileInfo> fileList = fileSnapshot.docs
@@ -114,21 +140,29 @@ class FirebaseFirestoreOperation{
         return [];
       }
     } catch (e) {
-      print('Error fetching all file info: $e');
+      debugPrint('Error fetching all file info: $e');
       return [];
     }
   }
 
   Future<void> deleteFileInfo(String fileId) async {
     try {
-      await _firestore.collection('files').doc(fileId).delete();
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
+      await _firestore.collection('users').doc(uuid).collection('files').doc(fileId).delete();
     } catch (e) {
-      print('Error deleting file: $e');
+      debugPrint('Error deleting file: $e');
     }
   }
 
   Future<List<int>> getFileCountForInfo() async {
-    QuerySnapshot userFiles = await _firestore.collection('files').get();
+    String? uuid = localStorage.getUUID();
+    if (uuid == null || uuid.isEmpty) {
+      throw Exception("UUID bulunamadı.");
+    }
+    QuerySnapshot userFiles = await _firestore.collection('users').doc(uuid).collection('files').get();
     int fileCount = userFiles.docs.length;
     return [fileCount, 0];
   }

@@ -1,7 +1,10 @@
 import 'package:get_storage/get_storage.dart';
+import 'package:uuid/uuid.dart';
+
+const Uuid uuid = Uuid();
+final uniqueId = uuid.v4();
 
 class GetLocalStorage {
-  // Singleton yapısı
   static final GetLocalStorage _instance = GetLocalStorage._internal();
 
   factory GetLocalStorage() {
@@ -27,6 +30,19 @@ class GetLocalStorage {
     await _storage.remove(_bitLengthKey);
   }
 
+
+  final String _uUID = "user";
+  final String _defaultUUID = uniqueId;
+
+  Future<void> saveUUID() async {
+    await _storage.write(_uUID, _defaultUUID);
+  }
+  String? getUUID() {
+    return _storage.read<String>(_uUID);
+  }
+  Future<void> removeUUID() async {
+    await _storage.remove(_uUID);
+  }
 
 
   Future<void> setValue(String key, dynamic value) async {

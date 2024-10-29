@@ -50,7 +50,7 @@ class _FileEncryptionState extends State<FileEncryption> {
         keyList = data;
         activeKey = keyList.first;
       } else {
-        Navigator.pop(context);
+        showChooseKeyMenu();
       }
     });
   }
@@ -129,7 +129,7 @@ class _FileEncryptionState extends State<FileEncryption> {
             child: Center(
               child: Column(
                 children: [
-                  const EPageAppBar(texts: "Dosya Şifrele"),
+                  const EPageAppBar(texts: "Dosya Şifrele",dataChanged: false),
                   const SizedBox(height: 12),
                   if (activeKey != null) ...[
                     Row(
@@ -218,6 +218,7 @@ class _FileEncryptionState extends State<FileEncryption> {
   void showChooseKeyMenu() {
     showDialog(
         context: context,
+        barrierDismissible: activeKey == null ?  false : true,
         barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
         builder: (BuildContext context) {
           return AlertDialog(
@@ -241,6 +242,9 @@ class _FileEncryptionState extends State<FileEncryption> {
                     IconButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        if(activeKey == null){
+                          Navigator.pop(context);
+                        }
                       },
                       icon: const Icon(Icons.close_rounded),
                       alignment: Alignment.centerRight,
@@ -297,9 +301,9 @@ class _FileEncryptionState extends State<FileEncryption> {
                     )),
                 const SizedBox(height: 8,),
                 SizedBox(
-                  height: 240,
+                  height: keyList.isNotEmpty ? 240 : 36,
                   width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
+                  child: keyList.isNotEmpty ? ListView.builder(
                     itemCount: keyList.length,
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
@@ -354,8 +358,11 @@ class _FileEncryptionState extends State<FileEncryption> {
                         ),
                       );
                     },
-                  ),
+                  ):
+                  RegularText(texts: "Kayıtlı anahtar bulunumadı.\nŞifreleme için anahtarı giriniz.",maxLines: 5,align: TextAlign.center,),
                 ),
+
+
               ],
             ),
           );

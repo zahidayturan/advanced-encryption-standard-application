@@ -145,11 +145,11 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
         SizedBox(height: 12,),
         Row(children: [
           Expanded(
-              flex: 2,
+              flex: 4,
               child: ShimmerBox(height: 132)),
           SizedBox(width: 12,),
           Expanded(
-              flex: 3,
+              flex: 5,
               child: ShimmerBox(height: 132))
         ],),
         SizedBox(height: 12,),
@@ -170,11 +170,16 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
           child: Image.asset("assets/icons/allKeys.png",height: 56,color: Theme.of(context).scaffoldBackgroundColor),
         ),
         onTapWidget(
-            onTap: (){
-              Navigator.push(
+            onTap: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const AllKeysPage()),
               );
+              if (result == 'updated') {
+                setState(() {
+                  print("anahtar üretimi dönen $result");
+                });
+              }
             },
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -239,7 +244,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                               fontFamilies: const ["FontMedium","FontBold"]),
                         ],
                       ),
-                      RegularText(texts: activeKey ? "Aktif anahtar\nyok" : "Aktif anahtar\nbulundu",size: 11,align: TextAlign.end,)
+                      RegularText(texts: activeKey ? "Aktif\nanahtar\nyok" : "Aktif\nanahtar\nbulundu",size: 11,align: TextAlign.end,)
                     ],
                   ),
                 ),
@@ -351,24 +356,33 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
               ListTile(
                 leading: Icon(Icons.qr_code_2_rounded,color: Theme.of(context).colorScheme.secondary,),
                 title: const RegularText(texts: "QR Kod İle Üret", size: 15,),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  Navigator.push(
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
                     //MaterialPageRoute(builder: (context) => QRCodeReadPage()),
                   );
+                  if (result == 'updated') {
+                    setState(() {
+                      print("set geldi");
+                    });
+                  }
                 },
               ),
               ListTile(
                 leading: Icon(Icons.mic_rounded,color: Theme.of(context).colorScheme.secondary,),
                 title: const RegularText(texts: "Ses İle Üret", size: 15,),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  Navigator.push(
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const VoiceProductionPage()),
                   );
+                  if (result == 'updated') {
+                    setState(() {});
+                  }
+
                 },
               ),
             ],

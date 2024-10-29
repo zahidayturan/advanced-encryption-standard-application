@@ -46,7 +46,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
             child: Center(
               child: Column(
                 children: [
-                  EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar"),
+                  EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar", dataChanged: false,),
                   FutureBuilder<List<KeyFileInfo>?>(
                     future: fileOperations.getAllFileInfo(),
                     builder: (context, snapshot) {

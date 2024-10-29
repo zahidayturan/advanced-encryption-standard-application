@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
 
   AppColors colors = AppColors();
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(

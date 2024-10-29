@@ -6,7 +6,8 @@ AppColors colors = AppColors();
 
 class EPageAppBar extends StatelessWidget {
   final String texts;
-  const EPageAppBar({super.key, required this.texts});
+  final bool dataChanged;
+  const EPageAppBar({super.key, required this.texts, required this.dataChanged});
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -16,7 +17,7 @@ class EPageAppBar extends StatelessWidget {
             padding: EdgeInsets.zero,
             alignment: Alignment.centerLeft,
             onPressed: () {
-          Navigator.pop(context);
+              Navigator.pop(context, dataChanged ? 'updated' : '');
         }, icon: Icon(Icons.arrow_back_rounded,color: Theme.of(context).colorScheme.secondary,)),
         RegularText(texts: texts,size: 17,align: TextAlign.end,)
       ],

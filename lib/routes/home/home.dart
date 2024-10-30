@@ -1,6 +1,7 @@
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/routes/home/components/home_files.dart';
 import 'package:aes/routes/home/components/home_key_and_encryption.dart';
+import 'package:aes/routes/home/components/home_receiving_operations.dart';
 import 'package:aes/routes/home/components/home_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,10 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 28,),
                   HomeKeyAndEncryption(),
                   SizedBox(height: 28,),
-                  HomeFiles()
+                  HomeFiles(),
+                  SizedBox(height: 28,),
+                  ReceivingOperations(),
+                  SizedBox(height: 28,)
                 ],
               )
             ),

@@ -237,7 +237,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                 ),
                 const SizedBox(height: 8),
                 const RegularText(
-                  texts: "Üretilen anahtarı paylaşmak isterseniz, diğer cihazda QR ile anahtar al menüsünde bu kodu okutunuz.",
+                  texts: "Üretilen anahtarı paylaşmak isterseniz, diğer cihazda anahtar ile al menüsünde bu kodu okutunuz.",
                   maxLines: 5,
                   size: 13,
                   align: TextAlign.center,

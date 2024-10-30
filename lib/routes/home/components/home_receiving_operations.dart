@@ -1,8 +1,14 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/models/key_info.dart';
+import 'package:aes/data/services/operations/key_operations.dart';
+import 'package:aes/routes/encryption/qr_reader.dart';
 import 'package:aes/ui/components/base_container.dart';
+import 'package:aes/ui/components/date_format.dart';
+import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ReceivingOperations extends StatefulWidget {
   const ReceivingOperations({super.key});
@@ -14,6 +20,7 @@ class ReceivingOperations extends StatefulWidget {
 class _ReceivingOperationsState extends State<ReceivingOperations> {
 
   AppColors colors = AppColors();
+  KeyOperations keyOperations = KeyOperations();
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +90,22 @@ class _ReceivingOperationsState extends State<ReceivingOperations> {
     return BaseContainer(
         padding: 0,
         child: onTapWidget(
-            onTap: (){
-
+            onTap: () async {
+              KeyInfo? key = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const QRCodeReadPage(type: "return")),
+              );
+              if (key != null) {
+                showQRGenerator(key);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: RegularText(texts: "Bir anahtar bulunamadı", color: colors.grey),
+                    backgroundColor: colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
             },
             child:  Padding(
               padding: const EdgeInsets.all(10),
@@ -125,6 +146,84 @@ class _ReceivingOperationsState extends State<ReceivingOperations> {
         borderRadius: BorderRadius.circular(8),
         child: child,
       ),
+    );
+  }
+
+  void showQRGenerator(KeyInfo keyInfo) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      barrierColor: Theme.of(context).colorScheme.secondary.withOpacity(0.075),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: [
+                Container(width: 60,height: 4,decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: const BorderRadius.all(Radius.circular(50))
+                ),),
+                const SizedBox(height: 24),
+                RegularText(
+                  texts: "Anahtar alındı",
+                  color: Theme.of(context).colorScheme.secondary,
+                  family: "FontBold",
+                  size: 16,
+                ),
+                const SizedBox(height: 4),
+                RegularText(
+                  texts: keyInfo.name != "" ? keyInfo.name : "İsimsiz Anahtar",
+                  maxLines: 3,
+                  size: 12,
+                  align: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                RegularText(
+                  texts: keyInfo.key,
+                  size: 9,
+                  align: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                RegularText(
+                  texts: "AES-${keyInfo.bitLength}",
+                  size: 9,
+                  align: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                    onPressed: () async {
+                      LoadingDialog.showLoading(context,message: "Anahtar kaydediliyor");
+                      await keyOperations.insertKeyInfo(keyInfo).then((value) {
+                        LoadingDialog.hideLoading(context);
+                        Navigator.of(context).pop();
+                        setState(() {
+
+                        });
+                      });
+
+                }, child: RegularText(texts: "Anahtarı kaydet ve çık",color: colors.grey,)),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: keyInfo.key));
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: RegularText(texts: 'Anahtar panoya kopyalandı', color: colors.grey),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: colors.green,
+                      ));
+
+                    }, child: RegularText(texts: "Anahtarı kopyala ve çık",color: colors.grey,)),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

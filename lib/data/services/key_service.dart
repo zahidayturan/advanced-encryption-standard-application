@@ -10,4 +10,6 @@ abstract class KeyService {
 
   Future<void> deleteKeyInfo(String keyId);
 
+  Future<KeyInfo?> getKeyInfoWithUser(String uuid,String uid);
+
 }

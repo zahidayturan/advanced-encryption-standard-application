@@ -1,4 +1,5 @@
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
 import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
@@ -389,7 +390,11 @@ class _AllKeysPageState extends State<AllKeysPage> {
   Future<void> _handlePopupMenuAction(int? value, KeyInfo keyInfo) async {
     switch (value) {
       case 1:
-        showQRGenerator(context,keyInfo);
+        String? uuid =  GetLocalStorage().getUUID();
+        if (uuid == null || uuid.isEmpty) {
+          throw Exception("UUID bulunamadı.");
+        }
+        showQRGenerator(context,keyInfo, uuid);
         break;
       case 2:
           _showLoading("Anahtar siliniyor",context);
@@ -417,7 +422,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
     LoadingDialog.hideLoading(context);
   }
 
-  void showQRGenerator(BuildContext context, KeyInfo keyInfo) {
+  void showQRGenerator(BuildContext context, KeyInfo keyInfo, String uUID) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -460,7 +465,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                     ),
                     const SizedBox(height: 4),
                     QrImageView(
-                      data: keyInfo.key,
+                      data: "$uUID/${keyInfo.id!}",
                       version: QrVersions.auto,
                       size: 200.0,
                       backgroundColor: colors.grey,),
@@ -480,7 +485,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                 ),
                 const SizedBox(height: 8),
                 const RegularText(
-                  texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
+                  texts: "Paylaşmak istediğiniz cihazda, anahtar al menüsünde bu kodu okutunuz.",
                   maxLines: 5,
                   size: 14,
                   align: TextAlign.center,

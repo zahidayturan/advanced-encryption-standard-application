@@ -5,8 +5,8 @@ import 'package:aes/data/services/key_service.dart';
 class KeyOperations implements KeyService {
 
   @override
-  Future<void> insertKeyInfo(KeyInfo okuurUserInfo) async {
-    await FirebaseFirestoreOperation().addKeyInfoToFirestore(okuurUserInfo);
+  Future<void> insertKeyInfo(KeyInfo keyInfo) async {
+    await FirebaseFirestoreOperation().addKeyInfoToFirestore(keyInfo);
   }
 
   @override
@@ -24,6 +24,12 @@ class KeyOperations implements KeyService {
   @override
   Future<void> deleteKeyInfo(String keyId) async {
     await FirebaseFirestoreOperation().deleteKeyInfo(keyId);
+  }
+
+  @override
+  Future<KeyInfo?> getKeyInfoWithUser(String uuid,String uid) async {
+    var key = await FirebaseFirestoreOperation().getKeyInfoWithUserId(uuid,uid);
+    return key;
   }
 
 }

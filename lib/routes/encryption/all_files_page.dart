@@ -540,7 +540,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                 ),
                 const SizedBox(height: 8),
                 const RegularText(
-                  texts: "Paylaşmak istediğiniz cihazda, QR ile anahtar al menüsünde bu kodu okutunuz.",
+                  texts: "Paylaşmak istediğiniz cihazda, anahtar al menüsünde bu kodu okutunuz.",
                   maxLines: 5,
                   size: 14,
                   align: TextAlign.center,

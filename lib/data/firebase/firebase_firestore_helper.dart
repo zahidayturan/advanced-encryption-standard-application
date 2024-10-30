@@ -166,4 +166,19 @@ class FirebaseFirestoreOperation{
     int fileCount = userFiles.docs.length;
     return [fileCount, 0];
   }
+
+  Future<KeyInfo?> getKeyInfoWithUserId(String uuid,String uid) async {
+    try {
+      DocumentSnapshot keySnapshot = await _firestore.collection('users').doc(uuid).collection('keys').doc(uid).get();
+      if (keySnapshot.exists) {
+        Map<String, dynamic>? keyData = keySnapshot.data() as Map<String, dynamic>?;
+        return keyData != null ? KeyInfo.fromJson(keyData) : null;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching key data: $e');
+      return null;
+    }
+  }
 }

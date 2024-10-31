@@ -2,7 +2,8 @@ import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
-import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
+import 'package:aes/routes/components/e_page_app_bar.dart';
+import 'package:aes/routes/key/components/get_type.dart';
 import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/text_field.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:qr_flutter/qr_flutter.dart';
 
 class GenerateKey extends StatefulWidget {
@@ -91,7 +91,7 @@ class _GenerateKeyState extends State<GenerateKey> {
     return mediaBytes;
   }
 
-  Future<String> generateKeyFromAudio(String path, int bitLength) async {
+  Future<String> generateKeyFromImageOrAudio(String path, int bitLength) async {
     List<int> audioBytes = await readMediaFile(path);
     int targetLength = bitLength ~/ 8;
     if (audioBytes.length > targetLength) {
@@ -106,35 +106,16 @@ class _GenerateKeyState extends State<GenerateKey> {
     return keyBase64;
   }
 
-  Future<String> generateKeyFromImage(String path, int bitLength) async {
-    List<int> imageBytes = await readMediaFile(path);
-    int targetLength = bitLength ~/ 8;
-    if (imageBytes.length > targetLength) {
-      imageBytes = imageBytes.sublist(0, targetLength);
-    }
-    if (imageBytes.length < targetLength) {
-      int paddingLength = targetLength - imageBytes.length;
-      imageBytes = List.from(imageBytes)..addAll(List.generate(paddingLength, (_) => 0));
-    }
-    final key = encrypt.Key.fromBase64(base64.encode(imageBytes));
-    String keyBase64 = base64.encode(key.bytes);
-    return keyBase64;
-  }
-
   Future<void> _handleAdKey(BuildContext context) async {
     LoadingDialog.showLoading(context, message: "Anahtar Üretiliyor");
-
     try {
       if (widget.type == "qr" || widget.type == "barcode") {
         generatedKey = generatePaddedKey(widget.codeOrPath, bitLength);
-      } else if (widget.type == "image") {
-        generatedKey = await generateKeyFromImage(widget.codeOrPath, bitLength);
-      } else if (widget.type == "voice") {
-        generatedKey = await generateKeyFromAudio(widget.codeOrPath, bitLength);
+      } else if (widget.type == "image" || widget.type == "voice") {
+        generatedKey = await generateKeyFromImageOrAudio(widget.codeOrPath, bitLength);
       } else {
         throw Exception("Geçersiz anahtar üretme tipi: ${widget.type}");
       }
-
       KeyInfo newKey = KeyInfo(
         creationTime: DateTime.now().toString(),
         name: _nameController.text,
@@ -249,18 +230,6 @@ class _GenerateKeyState extends State<GenerateKey> {
         );
       },
     );
-  }
-
-  String getTypeName(String shortName){
-    if(shortName == "qr"){
-      return "QR Kod ile";
-    }else if(shortName == "barcode"){
-      return "Barkod ile";
-    }else if(shortName == "image"){
-      return "Görüntü ile";
-    }else{
-      return "Ses ile";
-    }
   }
 
   @override

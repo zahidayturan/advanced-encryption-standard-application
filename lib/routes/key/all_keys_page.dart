@@ -2,7 +2,8 @@ import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
-import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
+import 'package:aes/routes/components/e_page_app_bar.dart';
+import 'package:aes/routes/key/components/get_type.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/date_format.dart';
 import 'package:aes/ui/components/loading.dart';
@@ -116,18 +117,6 @@ class _AllKeysPageState extends State<AllKeysPage> {
     );
   }
 
-  String getTypeName(String shortName){
-    if(shortName == "qr"){
-      return "QR Kod ile";
-    }else if(shortName == "barcode"){
-      return "Barkod ile";
-    }else if(shortName == "image"){
-      return "Görüntü ile";
-    }else{
-      return "Ses ile";
-    }
-  }
-
   Widget keyContainer(List<KeyInfo> keys) {
     return Column(
       children: [
@@ -166,8 +155,8 @@ class _AllKeysPageState extends State<AllKeysPage> {
                     ),
                     Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 4),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 4),
                           child: RegularText(texts: "Üretildi",style: FontStyle.italic,size: 11,family: "FontLight",),
                         ),
                         RegularText(
@@ -175,7 +164,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 8,),
+                    const SizedBox(height: 8,),
                     RegularText(
                       texts: "AES-${item.bitLength} bit",size: 12
                     ),
@@ -344,7 +333,7 @@ class _AllKeysPageState extends State<AllKeysPage> {
           const SizedBox(width: 12,),
           Expanded(child: ShimmerBox(height: 32,borderRadius: BorderRadius.circular(50),))
         ],),
-        SizedBox(height: 4,),
+        const SizedBox(height: 4,),
         Column(
           children: List.generate(5, (index) => const Padding(
             padding: EdgeInsets.only(top: 8),

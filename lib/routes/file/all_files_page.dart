@@ -122,7 +122,6 @@ class _AllFilesPageState extends State<AllFilesPage> {
     );
   }
 
-
   Widget swapButton(bool isActive) {
     return InkWell(
       onTap: () {
@@ -221,7 +220,6 @@ class _AllFilesPageState extends State<AllFilesPage> {
       },
     );
   }
-
 
   Widget searchBar(bool isActive){
     return BaseContainer(

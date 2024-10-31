@@ -21,7 +21,6 @@ dependencies:
   permission_handler: ^10.2.0
   qr_flutter: ^4.0.0
   get_storage: ^2.1.1
-  get: ^4.6.5
   flutter_native_splash: ^2.0.8
   file_picker: ^5.0.1
   path: ^1.8.3

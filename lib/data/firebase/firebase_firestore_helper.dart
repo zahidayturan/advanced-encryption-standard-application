@@ -1,3 +1,4 @@
+import 'package:aes/data/firebase/firebase_storage_helper.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/models/file_info.dart';
@@ -228,5 +229,58 @@ class FirebaseFirestoreOperation{
       debugPrint("Dosya silme hatası: $e");
     }
   }
+
+  Future<void> deleteAllData() async {
+    try {
+      String? uuid = localStorage.getUUID();
+      if (uuid == null || uuid.isEmpty) {
+        throw Exception("UUID bulunamadı.");
+      }
+
+      QuerySnapshot fileSnapshot = await _firestore.collection('users').doc(uuid).collection('files').get();
+      if (fileSnapshot.docs.isNotEmpty) {
+        List<FileInfo> fileList = fileSnapshot.docs.map((doc) => FileInfo.fromJson(doc.data() as Map<String, dynamic>)).toList();
+        for (FileInfo element in fileList) {
+          try {
+            await FirebaseStorageOperation().deleteFileFromFirebase(element);
+          } catch (e) {
+            debugPrint("Dosya Firebase'den silinemedi: $e");
+          }
+        }
+      }
+
+      QuerySnapshot keySnapshot = await _firestore.collection('users').doc(uuid).collection('keys').get();
+      if (keySnapshot.docs.isNotEmpty) {
+        for (var doc in keySnapshot.docs) {
+          try {
+            await _firestore.collection('users').doc(uuid).collection('keys').doc(doc.id).delete();
+          } catch (e) {
+            debugPrint("Anahtar Firestore'dan silinemedi: $e");
+          }
+        }
+      }
+      QuerySnapshot receivingSnapshot = await _firestore.collection('users').doc(uuid).collection('receivingFiles').get();
+      if (receivingSnapshot.docs.isNotEmpty) {
+        for (var doc in receivingSnapshot.docs) {
+          try {
+            await _firestore.collection('users').doc(uuid).collection('receivingFiles').doc(doc.id).delete();
+          } catch (e) {
+            debugPrint("Alınan dosya bilgisi Firestore'dan silinemedi: $e");
+          }
+        }
+      }
+      try {
+        await _firestore.collection('users').doc(uuid).delete();
+        debugPrint("Kullanıcı Firestore'dan başarıyla silindi.");
+      } catch (e) {
+        debugPrint("Kullanıcı Firestore'dan silinemedi: $e");
+      }
+
+    } catch (e) {
+      debugPrint("Veri silme işlemi sırasında hata oluştu: $e");
+    }
+  }
+
+
 
 }

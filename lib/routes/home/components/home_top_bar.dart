@@ -1,7 +1,6 @@
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/routes/other/settings.dart';
 import 'package:aes/ui/components/regular_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 

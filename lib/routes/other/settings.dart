@@ -1,6 +1,8 @@
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
+import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/ui/components/base_container.dart';
+import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/text_field.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   AppColors colors = AppColors();
   final localStorage = GetLocalStorage();
+  FileOperations fileOperations = FileOperations();
   String? uUUID;
   @override
   void initState() {
@@ -113,8 +116,10 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         children: [
           ElevatedButton(
-              onPressed: () {
-
+              onPressed: () async {
+                LoadingDialog.showLoading(context,message:"Veriler siliniyor" );
+                await fileOperations.deleteAllUserData();
+                LoadingDialog.hideLoading(context);
               },
               style: ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(colors.red),

@@ -1,18 +1,19 @@
 import 'dart:io';
-
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
-import 'package:aes/routes/encryption/all_keys_page.dart';
-import 'package:aes/routes/encryption/file_encryption.dart';
-import 'package:aes/routes/encryption/generate_key.dart';
-import 'package:aes/routes/encryption/qr_reader.dart';
-import 'package:aes/routes/encryption/voice_recorder.dart';
+import 'package:aes/routes/key/all_keys_page.dart';
+import 'package:aes/routes/file/file_encryption.dart';
+import 'package:aes/routes/key/generate_key.dart';
+import 'package:aes/routes/components/qr_reader.dart';
+import 'package:aes/routes/components/voice_recorder.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/dropdown_menu.dart';
+import 'package:aes/ui/components/on_tap_widget.dart';
 import 'package:aes/ui/components/regular_text.dart';
 import 'package:aes/ui/components/rich_text.dart';
 import 'package:aes/ui/components/shimmer_box.dart';
+import 'package:aes/ui/components/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +86,6 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
-
     if (result != null && result.files.isNotEmpty) {
       PlatformFile file = result.files.first;
       if (file.path != null) {
@@ -100,7 +100,6 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return  Column(
@@ -112,7 +111,7 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
             RegularText(texts: "Anahtar ve Şifreleme İşlemleri",size: 15,color: Theme.of(context).colorScheme.tertiary,style: FontStyle.italic,weight: FontWeight.w600,),
             onTapWidget(
                 onTap: (){
-
+                  showSnackbar("Açıklama metni eklenmemiş",colors.greenDark,context);
                 },
                 child: BaseContainer(
                     padding: 2, color: Theme.of(context).colorScheme.tertiaryContainer, radius: 50,
@@ -346,18 +345,6 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget onTapWidget({required void Function()? onTap, required Widget child}) {
-    return Material(
-      type: MaterialType.transparency,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: child,
       ),
     );
   }

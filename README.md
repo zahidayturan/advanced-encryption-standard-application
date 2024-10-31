@@ -3,11 +3,12 @@
 ## AES App *beta*
 
 **Mobile App developed with [Flutter](https://flutter.dev/)**.
-<div align="center">
-  <img src="/assets/brands/aesApp.png" width=25% height=25%/>
-</div>
 
+AES (Advanced Encryption Standard) is a symmetric encryption algorithm that provides secure and efficient encryption for digital data by using a single key for both encryption and decryption.
 
+*This application leverages AES encryption to secure media files using unique keys generated from QR codes, barcodes, sound, and images. Users can encrypt files with these keys, allowing them to securely share both the encrypted files and corresponding keys with other users for safe decryption.*
+
+<img src="/assets/brands/appSs.png" width=100% />
 
 ### Dependencies
 
@@ -24,6 +25,10 @@ Add google-services.json file
 Create firebase project and add `google-services.json` file in `android/app` folder.
 ```
 **TODO**
+
+<div align="center">
+  <img src="/assets/brands/aesApp.png" width=25% height=25%/>
+</div>
 
 ## How can I support developers?
 - Star our GitHub repo

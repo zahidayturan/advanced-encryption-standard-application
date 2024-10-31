@@ -72,4 +72,9 @@ class FileOperations implements FileService {
     await FirebaseFirestoreOperation().deleteReceivingFileFromFirebase(fileId);
   }
 
+  @override
+  Future<void> deleteAllUserData() async {
+    await FirebaseFirestoreOperation().deleteAllData();
+  }
+
 }

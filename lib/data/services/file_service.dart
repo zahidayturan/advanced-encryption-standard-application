@@ -23,4 +23,6 @@ abstract class FileService {
 
   Future<void> deleteReceivingFile(String fileId);
 
+  Future<void> deleteAllUserData();
+
 }

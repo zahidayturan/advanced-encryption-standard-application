@@ -6,7 +6,7 @@ import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
 import 'package:aes/data/services/operations/file_operations.dart';
 import 'package:aes/data/services/operations/key_operations.dart';
-import 'package:aes/routes/encryption/components/e_page_app_bar.dart';
+import 'package:aes/routes/components/e_page_app_bar.dart';
 import 'package:aes/ui/components/base_container.dart';
 import 'package:aes/ui/components/loading.dart';
 import 'package:aes/ui/components/regular_text.dart';

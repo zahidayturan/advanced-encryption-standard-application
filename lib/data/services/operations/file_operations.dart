@@ -10,8 +10,8 @@ import 'package:encrypt/encrypt.dart';
 class FileOperations implements FileService {
 
   @override
-  Future<List<KeyFileInfo>?> getAllFileInfo() async {
-    var files = await FirebaseFirestoreOperation().getAllFileInfo();
+  Future<List<KeyFileInfo>?> getAllFileInfo(String fileType) async {
+    var files = await FirebaseFirestoreOperation().getAllFileInfo(fileType);
     return files;
   }
 
@@ -54,6 +54,22 @@ class FileOperations implements FileService {
   Future<List<int>>getFileCountForInfo() async {
     List<int> dataList = await FirebaseFirestoreOperation().getFileCountForInfo();
     return dataList;
+  }
+
+  @override
+  Future<FileInfo?> getFileInfoWithUser(String uuid,String uid) async {
+    var file = await FirebaseFirestoreOperation().getFileInfoWithUserId(uuid,uid);
+    return file;
+  }
+
+  @override
+  Future<void> insertReceivingFile(FileInfo fileInfo) async {
+    await FirebaseFirestoreOperation().uploadReceivingFileToFirebase(fileInfo);
+  }
+
+  @override
+  Future<void>deleteReceivingFile(String fileId) async {
+    await FirebaseFirestoreOperation().deleteReceivingFileFromFirebase(fileId);
   }
 
 }

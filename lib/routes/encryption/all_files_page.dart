@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:aes/core/constants/colors.dart';
+import 'package:aes/data/get/get_storage_helper.dart';
 import 'package:aes/data/models/dto/key_file.dart';
 import 'package:aes/data/models/file_info.dart';
 import 'package:aes/data/models/key_info.dart';
@@ -83,7 +84,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                   children: [
                     EPageAppBar(texts: widget.fileType == "owned" ? "Yüklenen Dosyalar" : "Gelen Dosyalar", dataChanged: dataChanged),
                     FutureBuilder<List<KeyFileInfo>?>(
-                      future: fileOperations.getAllFileInfo(),
+                      future: fileOperations.getAllFileInfo(widget.fileType),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return bodyLoading();
@@ -378,6 +379,10 @@ class _AllFilesPageState extends State<AllFilesPage> {
   }
 
   Future<void> _handlePopupMenuAction(int? value, KeyFileInfo info) async {
+    String? uuid =  GetLocalStorage().getUUID();
+    if (uuid == null || uuid.isEmpty) {
+      throw Exception("UUID bulunamadı.");
+    }
     switch (value) {
       case 1:
         if(info.keyInfo.id != "tempKey"){
@@ -396,9 +401,12 @@ class _AllFilesPageState extends State<AllFilesPage> {
           showInputKeyMenu("info",info);
         }
         break;
+      case 3:
+        showQRGenerator(context,info,false,uuid);
+        break;
       case 4:
         if(info.keyInfo.id != "tempKey"){
-          showQRGenerator(context,info.keyInfo);
+          showQRGenerator(context,info,true,uuid);
         }else{
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -477,7 +485,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
     LoadingDialog.hideLoading(context);
   }
 
-  void showQRGenerator(BuildContext context, KeyInfo keyInfo) {
+  void showQRGenerator(BuildContext context, KeyFileInfo info,bool isKey,String uuid) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -502,7 +510,7 @@ class _AllFilesPageState extends State<AllFilesPage> {
                     ),),
                     const SizedBox(height: 24),
                     RichTextWidget(
-                      texts: const ["QR Kod ", "ile anahtarını paylaş"],
+                      texts: ["QR Kod ", isKey ? "ile anahtarını paylaş" : "ile dosyanı paylaş"],
                       colors: [Theme.of(context).colorScheme.secondary],
                       fontFamilies: const ["FontBold", "FontMedium"],
                       fontSize: 16,
@@ -513,34 +521,36 @@ class _AllFilesPageState extends State<AllFilesPage> {
                 Column(
                   children: [
                     RegularText(
-                      texts: keyInfo.name != "" ? keyInfo.name : "İsimsiz Anahtar",
+                      texts: isKey ? (info.keyInfo.name != "" ? info.keyInfo.name : "İsimsiz Anahtar") :
+                      (info.fileInfo.name != "" ? info.fileInfo.name : "İsimsiz Dosya"),
                       maxLines: 3,
                       size: 12,
                       align: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     QrImageView(
-                      data: keyInfo.key,
+                      data: isKey ? "$uuid/${info.keyInfo.id!}" : "$uuid/${info.fileInfo.id!}",
                       version: QrVersions.auto,
                       size: 200.0,
                       backgroundColor: colors.grey,),
                     const SizedBox(height: 4),
                     RegularText(
-                      texts: keyInfo.key,
+                      texts: isKey ? info.keyInfo.key : info.fileInfo.type,
                       maxLines: 3,
                       size: 9,
                       align: TextAlign.center,
                     ),
                     RegularText(
-                      texts: formatDateTime(keyInfo.creationTime),
+                      texts: formatDateTime(isKey ? info.keyInfo.creationTime : info.fileInfo.creationTime),
                       size: 10,
                       align: TextAlign.center,
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const RegularText(
-                  texts: "Paylaşmak istediğiniz cihazda, anahtar al menüsünde bu kodu okutunuz.",
+                RegularText(
+                  texts: isKey ? "Paylaşmak istediğiniz cihazda, anahtar al menüsünde bu kodu okutunuz.":
+                  "Paylaşmak istediğiniz cihazda, dosya al menüsünde bu kodu okutunuz.",
                   maxLines: 5,
                   size: 14,
                   align: TextAlign.center,

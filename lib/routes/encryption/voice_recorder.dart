@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:aes/core/constants/colors.dart';
 import 'package:aes/routes/encryption/generate_key.dart';
 import 'package:aes/ui/components/regular_text.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -184,6 +185,30 @@ class _VoiceProductionPageState extends State<VoiceProductionPage> with SingleTi
     super.dispose();
   }
 
+  Future<String?> pickAudioPath() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.audio,
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      PlatformFile file = result.files.first;
+      if (file.path != null) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => GenerateKey(codeOrPath: file.path!,type: "voice",)),
+        );
+        return file.path;
+      } else {
+        debugPrint("Dosya yolu bulunamadı.");
+        return null;
+      }
+    } else {
+      debugPrint("Dosya seçilmedi.");
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,9 +248,18 @@ class _VoiceProductionPageState extends State<VoiceProductionPage> with SingleTi
                     ),
                   ),
                 ),
+                const SizedBox(height: 12,),
+                ElevatedButton(onPressed: () {
+                  pickAudioPath();
+
+                },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(colors.blueMid)
+                    ),
+                    child: RegularText(texts: "Ses dosyası yükle",color: colors.grey,)),
                 const SizedBox(height: 20),
                 if (_filePath.isNotEmpty && !_isRecording)
-                  RegularText(texts: 'Ses Kaydedildi', size: 15,),
+                  const RegularText(texts: 'Ses Kaydedildi', size: 15,),
                 const SizedBox(height: 10),
                 if (_filePath.isNotEmpty && !_isRecording)
                   Row(
@@ -238,7 +272,7 @@ class _VoiceProductionPageState extends State<VoiceProductionPage> with SingleTi
                       const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: _deleteRecording,
-                        child: Text('Kaydı Sil'),
+                        child: const Text('Kaydı Sil'),
                       ),
                     ],
                   ),

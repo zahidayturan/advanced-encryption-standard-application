@@ -400,8 +400,8 @@ class _HomeKeyAndEncryptionState extends State<HomeKeyAndEncryption> {
                     Navigator.pop(context);
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
-                      //MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "qr")),
+                      //MaterialPageRoute(builder: (context) => const GenerateKey(codeOrPath: "helloworld",type: "qr",)),
+                      MaterialPageRoute(builder: (context) => QRCodeReadPage(type: "qr")),
                     );
                     if (result == 'updated') {
                       setState(() {});
